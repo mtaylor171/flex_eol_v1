@@ -17,9 +17,6 @@ ACTIVE_CHANNELS = 8
 PWM_PIN = 19            # GPIO pin 19 for Motor PWM control
 MOTOR_EN_PIN = 15       # GPIO pin 15 for Motor enable
 
-FILE_OUTPUT_NAME = str(datetime.datetime.now())
-file = open("/home/pi/Documents/MOTOR_DATA_FOLDER/" + FILE_OUTPUT_NAME, 'w', newline='')
-
 data = [[],[],[],[],[],[],[],[],[]]
 data_single_revolution = [[],[],[],[]]
 
@@ -28,7 +25,7 @@ kAlpha = 0.01
 kBeta = 0.0001
 
 def get_us():
-    now = time.clock()
+    now = time.time()
     return now
 
 # returns the elapsed time by subtracting the timestamp provided by the current time 
@@ -127,7 +124,7 @@ class MotorController(object):
     def health_check(self, data):
         code = [0,0,0]
         for i in range(1,4): # Turning Hall sensor channel data into a 3-digit position code
-            if(data[i] > 1.5): # Set a threshold of 1650mV for the hall pulse
+            if(data[i] > 1500): # Set a threshold of 1650mV for the hall pulse
                 code[i-1] = 1
             else:
                 code[i-1] = 0
@@ -242,7 +239,7 @@ class MotorController(object):
     
     def _get_rpm(self, current_rev_time, last_rev_time):
 
-        freq = 60*( 1000000/((current_rev_time - last_rev_time)) )
+        freq = 60*( 1/((current_rev_time - last_rev_time)) )
         self.freq_count[0].append(get_elapsed_us(self.INITIAL_US))
         self.freq_count[1].append(freq)
         return freq
@@ -259,7 +256,7 @@ def start_sequence():
     print('\033c')
     print("*****************************")
     #print(FILE_OUTPUT_NAME)
-    print(f"NURO MOTOR TESTING - {FILE_OUTPUT_NAME}")
+    print(f"NURO MOTOR TESTING - {datetime.datetime.now().replace(microsecond=0)}")
     print("*****************************\n")
 
     MC_start = MotorController(PWM_PIN, MOTOR_EN_PIN, 0, 0)
@@ -289,7 +286,7 @@ def start_sequence():
 def end_sequence(MC):
     MC.killall()
 
-def run_motor(MC):
+def run_motor(MC, file):
     temp_data = np.uint32([0,0,0,0,0,0,0,0,0])
     adc_reading = 0x0
     index = 0x0
@@ -316,7 +313,7 @@ def run_motor(MC):
             temp_data[index+1] = adc_reading
             data[index+1].append(temp_data[index+1])
 
-        temp_data[0] = get_elapsed_us(MC.INITIAL_US)
+        temp_data[0] = int(round(get_elapsed_us(MC.INITIAL_US), 6) * 1000000)
         data[0].append(temp_data[0])
         writer = csv.writer(file)
         writer.writerow(temp_data)
@@ -327,7 +324,7 @@ def run_motor(MC):
                 MC.analog_terminate()
                 MC.shutdown()
                 return -1, msg
-            if(temp_data[0] >= MC.motor_duration):
+            if(temp_data[0] >= MC.motor_duration * 1000000):
                 MC.analog_terminate()
                 MC.rampdown()
                 msg = "Motor duration reached: {}".format(temp_data[0])
@@ -344,14 +341,17 @@ def run_motor(MC):
 
 def data_process(data):
     index = ((data >> 12) & 0x7)
+    data_converted = int(data & 0xFFF)
     if index in range(0,3): # Channels 0-2 are hall sensors - use voltage translation
-        adc_reading = int((data & 0x0FFF) * (5/4095))
+        adc_reading = (-(data_converted * (5/4095)))
     elif index in range(3,6): # Channes 3-5 are current sensors - use current translation
-        #adc_reading = int(((data & 0x0FFF) * (-50/4095)) + 30)
-        adc_reading = int((data & 0xFFF))
+        #adc_reading = round(float(30 - ((data & 0x0FFF) * 50 / 4095)), 3)
+        adc_reading = np.subtract(30, int((data_converted * (50 / 4095))))
     elif index in range(6,9):
-        adc_reading = int((((data & 0x0FFF) - 409.5) * 0.7535795) + 25)
-    return adc_reading, index
+        adc_reading = data_converted
+        #adc_reading = int(((data_converted - 409.5) * 0.7535795) + 25)
+    #return adc_reading, index
+    return data_converted, index
 
 def message_display(msg, desired_answer):
     while(1):
@@ -365,6 +365,10 @@ def message_display(msg, desired_answer):
             return 0
 
 def run_main():
+        
+    FILE_OUTPUT_NAME = str(datetime.datetime.now().replace(microsecond=0))
+    file1 = open("/home/pi/Documents/MOTOR_DATA_FOLDER/" + FILE_OUTPUT_NAME + " mode1_test", 'w', newline='')
+
     print('\033c')
     print("*****************************")
     print("This test will run 2 configurable modes. Please enter parameters below:")
@@ -378,7 +382,7 @@ def run_main():
     
     resp, msg = MC_1.initialize()
     if not resp:
-        end_sequence(MC)
+        end_sequence(MC_1)
         return -1
     MC_2 = MotorController(PWM_PIN, MOTOR_EN_PIN, MOTOR_DURATION_MC2, MOTOR_PWM_TARGET_MC2)
     
@@ -392,7 +396,7 @@ def run_main():
         print("*****************************")
         print("----Testing Mode 1----")
 
-        resp1, msg1 = run_motor(MC_1)
+        resp1, msg1 = run_motor(MC_1, file1)
         print(msg1)
         #end_sequence(MC_1)
         if resp1 < 0:
@@ -410,8 +414,8 @@ def run_main():
         print("*****************************\n")
         print("----Testing Mode 2----")
         
-        
-        resp2, msg2 = run_motor(MC_2)
+        file2 = open("/home/pi/Documents/MOTOR_DATA_FOLDER/" + FILE_OUTPUT_NAME + " mode2_test", 'w', newline='')
+        resp2, msg2 = run_motor(MC_2, file2)
         print(msg2)
         #end_sequence(MC_2)
         if resp2 < 0:
