@@ -28,8 +28,8 @@ kAlpha = 0.01
 kBeta = 0.0001
 
 def get_us():
-    now = datetime.datetime.now()
-    return (now.minute*60000000)+(now.second*1000000)+(now.microsecond)
+    now = time.clock()
+    return now
 
 # returns the elapsed time by subtracting the timestamp provided by the current time 
 def get_elapsed_us(timestamp):
@@ -147,7 +147,7 @@ class MotorController(object):
                     self.position_counter = 0
                     self.last_rev_time = self.current_rev_time
                     print('\033c')
-                    print("Time: {} ".format(round((get_elapsed_us(self.INITIAL_US)/1000000), 2)) + "PWM: {} ".format(self.pwm_current) + "RPM: {} ".format(freq))
+                    print("Time: {} ".format(round(get_elapsed_us(self.INITIAL_US), 3)) + "PWM: {} ".format(self.pwm_current) + "RPM: {} ".format(freq))
                     #print('\033c')
                     #print("RPM: {} ".format(freq))
                 else:
@@ -160,7 +160,7 @@ class MotorController(object):
             self.position_hold_time = get_us()
             self.last_position = position
         else:
-            if((get_us() - self.position_hold_time) > 1000000):
+            if get_elapsed_us(self.position_hold_time) > 1:
                 msg = "STALL DETECTED"
                 return 0, msg
 
@@ -327,7 +327,7 @@ def run_motor(MC):
                 MC.analog_terminate()
                 MC.shutdown()
                 return -1, msg
-            if(temp_data[0] >= MC.motor_duration * 1000000):
+            if(temp_data[0] >= MC.motor_duration):
                 MC.analog_terminate()
                 MC.rampdown()
                 msg = "Motor duration reached: {}".format(temp_data[0])

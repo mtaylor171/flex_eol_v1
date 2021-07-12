@@ -73,7 +73,37 @@ class reader:
         self._cb.cancel() 
 
 
-if __name__ == "__main__":
+def start_sequence():
+    print('\033c')
+    print("*****************************")
+    print(f"NURO FAN TESTING - {FILE_OUTPUT_NAME}")
+    print("*****************************\n")
+
+    MC_start = MotorController(PWM_PIN, MOTOR_EN_PIN, 0, 0)
+
+    MC_start.bcm2835_init_spi()
+
+    print("Waiting on motor board to power up...")
+    print("(NOTE: Hold CTRL + 'C' to exit program)\n")
+
+    try:
+        while(MC_start.bcm2835_motor_ping()):
+            pass
+        #print('\033c')
+        print("*****************************")
+        print("Motor Board Connected!")
+        print("*****************************")
+
+        #end_sequence(MC_start)
+        
+        return 1
+
+    except KeyboardInterrupt:
+        end_sequence(MC_start)
+
+        return 0
+
+def run_main():
 
     import time
     import pigpio
@@ -112,3 +142,25 @@ if __name__ == "__main__":
     p.cancel()
 
     #p.stop()
+
+if __name__ == "__main__":
+    while(1):
+        if start_sequence() == 0:
+            sys.exit()
+
+        while(1):
+            state = run_main()
+
+            if state == 0 :
+                print('\033c')
+                print("*****************************")
+                print("This program will be shutting down in 3 seconds")
+                print("*****************************")
+                time.sleep(3)
+                sys.exit()
+
+            elif state == -1:
+                break
+
+            else:
+                pass
