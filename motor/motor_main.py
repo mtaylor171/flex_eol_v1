@@ -341,7 +341,7 @@ def run_motor(MC, file):
 
 def data_process(data):
     index = ((data >> 12) & 0x7)
-    data_converted = int(data & 0xFFF)
+    data_converted = int(data & 0xFFF) * (5000/4095)
     if index in range(0,3): # Channels 0-2 are hall sensors - use voltage translation
         adc_reading = (-(data_converted * (5/4095)))
     elif index in range(3,6): # Channes 3-5 are current sensors - use current translation
