@@ -373,12 +373,16 @@ def data_process(data):
     if index in range(0,3): # Channels 0-2 are hall sensors - use voltage translation
         adc_reading = data_converted
     elif index in range(3,6): # Channes 3-5 are current sensors - use current translation
-        adc_reading = ((3000 - data_converted) / 0.1)
+        #adc_reading = (3000 - data_converted)
+        if data_converted >= 3000:
+            adc_reading = 0
+        else:
+            adc_reading = (10 * (3000 - data_converted))
     elif index in range(6,9):
         adc_reading = data_converted
         #adc_reading = int(((data_converted - 409.5) * 0.7535795) + 25)
-    #return adc_reading, index
-    return data_converted, index
+    return adc_reading, index
+    #return data_converted, index
 
 def message_display(msg, desired_answer):
     while(1):
@@ -442,7 +446,7 @@ def run_main():
             time.sleep(3)
             return -1
         MC_1.motor_results(resp1, msg1)
-        time.sleep(5)
+        #time.sleep(5)
         #print('\033c')
         print("*****************************\n")
         print("----Testing Mode 2----")
@@ -460,7 +464,7 @@ def run_main():
             print("Restarting test program...")
             time.sleep(3)
             return -1
-        time.sleep(5)
+        #time.sleep(5)
         print("*****************************\n")
         print("----Testing Mode 3----")
         '''
