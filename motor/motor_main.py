@@ -25,7 +25,7 @@ kAlpha = 0.01
 kBeta = 0.0001
 
 def get_us():
-    now = time.time()
+    now = time.perf_counter()
     return now
 
 # returns the elapsed time by subtracting the timestamp provided by the current time 
@@ -49,7 +49,7 @@ class MotorController(object):
         self.INITIAL_US = get_us()
         
         ## Default values
-        self.pwm_current = 9
+        self.pwm_current = 14
         self.position_hold_time = 0
         self.position_counter = 0
         self.data = []
@@ -135,7 +135,7 @@ class MotorController(object):
             if(self.last_position != 0):
                 self.master_pos_counter += 1
                 self.position_counter += 1 
-                if(self.position_counter == 90):
+                if(self.position_counter == 30):
                     self.current_rev_time = get_us()
                     freq = self._get_rpm(self.current_rev_time, self.last_rev_time)
                     self.running_filter(freq)
@@ -144,7 +144,7 @@ class MotorController(object):
                     self.position_counter = 0
                     self.last_rev_time = self.current_rev_time
                     print('\033c')
-                    print("Time: {} ".format(round(get_elapsed_us(self.INITIAL_US), 3)) + "PWM: {} ".format(self.pwm_current) + "RPM: {} ".format(freq))
+                    print("Time: {} ".format(round(get_elapsed_us(self.INITIAL_US), 1)) + "PWM: {} ".format(self.pwm_current) + "RPM: {} ".format(round(freq, 1)))
                     #print('\033c')
                     #print("RPM: {} ".format(freq))
                 else:
@@ -239,7 +239,7 @@ class MotorController(object):
     
     def _get_rpm(self, current_rev_time, last_rev_time):
 
-        freq = 60*( 1/((current_rev_time - last_rev_time)) )
+        freq = 60*( 1/((current_rev_time - last_rev_time)*3) )
         self.freq_count[0].append(get_elapsed_us(self.INITIAL_US))
         self.freq_count[1].append(freq)
         return freq
@@ -251,6 +251,24 @@ class MotorController(object):
     def _revolution_rms(self):
         #TODO: Implement Function here
         return 0
+
+def graph_freq(MC_1, MC_2, MC_3, MC_4):
+    #fig, axs = plt.subplots(2)
+    #fig.suptitle('Motor Frequency')
+    plt.xlabel('Time (ms)')
+    
+    #axs[0].set_ylabel(f'Mode 1 RPM @ {MC_1.pwm_target}% target duty')
+    #axs[1].set_ylabel(f'Mode 2 RPM @ {MC_2.pwm_target}% target duty')
+    
+    #axs[0].plot(MC_1.freq_count[0], MC_1.freq_count[1])
+    #axs[1].plot(MC_2.freq_count[0], MC_2.freq_count[1])
+    
+    plt.plot(MC_1.freq_count[0], MC_1.freq_count[1])
+    plt.plot(MC_2.freq_count[0], MC_2.freq_count[1])
+    plt.plot(MC_3.freq_count[0], MC_3.freq_count[1])
+    plt.plot(MC_4.freq_count[0], MC_4.freq_count[1])
+    plt.legend([f"TEST1 - PWM target: {MC_1.pwm_target}%", f"TEST2 - PWM target: {MC_2.pwm_target}%", f"TEST3 - PWM target: {MC_3.pwm_target}%", f"TEST4 - PWM target: {MC_4.pwm_target}%"])
+    plt.show()
 
 def start_sequence():
     print('\033c')
@@ -343,10 +361,9 @@ def data_process(data):
     index = ((data >> 12) & 0x7)
     data_converted = int(data & 0xFFF) * (5000/4095)
     if index in range(0,3): # Channels 0-2 are hall sensors - use voltage translation
-        adc_reading = (-(data_converted * (5/4095)))
+        adc_reading = data_converted
     elif index in range(3,6): # Channes 3-5 are current sensors - use current translation
-        #adc_reading = round(float(30 - ((data & 0x0FFF) * 50 / 4095)), 3)
-        adc_reading = np.subtract(30, int((data_converted * (50 / 4095))))
+        adc_reading = ((3000 - data_converted) / 0.1)
     elif index in range(6,9):
         adc_reading = data_converted
         #adc_reading = int(((data_converted - 409.5) * 0.7535795) + 25)
@@ -374,9 +391,13 @@ def run_main():
     print("This test will run 2 configurable modes. Please enter parameters below:")
     MOTOR_DURATION_MC1 = int(input("Enter duration 1: "))
     MOTOR_DURATION_MC2 = int(input("Enter duration 2: "))
+    MOTOR_DURATION_MC3 = int(input("Enter duration 3: "))
+    MOTOR_DURATION_MC4 = int(input("Enter duration 4: "))
 
     MOTOR_PWM_TARGET_MC1 = int(input("Enter target duty cycle 1: "))
     MOTOR_PWM_TARGET_MC2 = int(input("Enter target duty cycle 2: "))
+    MOTOR_PWM_TARGET_MC3 = int(input("Enter target duty cycle 3: "))
+    MOTOR_PWM_TARGET_MC4 = int(input("Enter target duty cycle 4: "))
 
     MC_1 = MotorController(PWM_PIN, MOTOR_EN_PIN, MOTOR_DURATION_MC1, MOTOR_PWM_TARGET_MC1)
     
@@ -385,6 +406,8 @@ def run_main():
         end_sequence(MC_1)
         return -1
     MC_2 = MotorController(PWM_PIN, MOTOR_EN_PIN, MOTOR_DURATION_MC2, MOTOR_PWM_TARGET_MC2)
+    MC_3 = MotorController(PWM_PIN, MOTOR_EN_PIN, MOTOR_DURATION_MC3, MOTOR_PWM_TARGET_MC3)
+    MC_4 = MotorController(PWM_PIN, MOTOR_EN_PIN, MOTOR_DURATION_MC4, MOTOR_PWM_TARGET_MC4)
     
     print('\033c')
     print("----PLEASE CONNECT MOTOR----\n")
@@ -428,8 +451,44 @@ def run_main():
             time.sleep(3)
             return -1
         
+        print("*****************************\n")
+        print("----Testing Mode 3----")
+        
+        file3 = open("/home/pi/Documents/MOTOR_DATA_FOLDER/" + FILE_OUTPUT_NAME + " mode3_test", 'w', newline='')
+        resp3, msg3 = run_motor(MC_3, file3)
+        print(msg3)
+        #end_sequence(MC_2)
+        if resp3 < 0:
+            #print('\033c')
+            print(msg3)
+            while(message_display("\nType 'c' and ENTER to continue: ", 'c') != 1):
+                pass
+            print('\033c')
+            print("Restarting test program...")
+            time.sleep(3)
+            return -1
+        
+        print("*****************************\n")
+        print("----Testing Mode 4----")
+        
+        file4 = open("/home/pi/Documents/MOTOR_DATA_FOLDER/" + FILE_OUTPUT_NAME + " mode4_test", 'w', newline='')
+        resp4, msg4 = run_motor(MC_4, file4)
+        print(msg2)
+        #end_sequence(MC_2)
+        if resp2 < 0:
+            #print('\033c')
+            print(msg2)
+            while(message_display("\nType 'c' and ENTER to continue: ", 'c') != 1):
+                pass
+            print('\033c')
+            print("Restarting test program...")
+            time.sleep(3)
+            return -1
+        
         MC_2.motor_results(resp2, msg2)
         
+        
+        graph_freq(MC_1, MC_2, MC_3, MC_4)
 
         #print('\033c')
         print("Please disconnect motor!\n")
@@ -440,6 +499,8 @@ def run_main():
     except KeyboardInterrupt:
         end_sequence(MC_1)
         end_sequence(MC_2)
+        end_sequence(MC_3)
+        end_sequence(MC_4)
         return 0
 
 if __name__ == "__main__":

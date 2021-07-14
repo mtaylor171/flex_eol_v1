@@ -598,7 +598,7 @@ void getAnalogInAll_InitialSend()
 uint16_t getAnalogInAll_Receive()
 {
 	spiComs(AD5592_NOP);
-	bcm2835_delay(0.1);
+	//bcm2835_delay(0.1);
 	uint16_t result = ((spiIn[0] << 8) & 0xFF00) | (spiIn[1] & 0x00FF);
 	return result;
 }
@@ -632,5 +632,5 @@ void AD5592_Init()
     bcm2835_spi_setDataMode(BCM2835_SPI_MODE1);                   // Mode 1
 
     /* Set SPI clock */
-    bcm2835_spi_setClockDivider(BCM2835_SPI_CLOCK_DIVIDER_128); 	  // 1.5GHz / 128 = 11.71MHz
+    bcm2835_spi_setClockDivider(BCM2835_SPI_CLOCK_DIVIDER_64); 	  // 1.5GHz / 128 = 11.71MHz
 }
