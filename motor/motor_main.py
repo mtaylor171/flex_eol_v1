@@ -255,7 +255,8 @@ class MotorController(object):
         #TODO: Implement Function here
         return 0
 
-def graph_freq(MC_1, MC_2, MC_3, MC_4):
+#def graph_freq(MC_1, MC_2, MC_3, MC_4):
+def graph_freq(MC_1, MC_2):
     #fig, axs = plt.subplots(2)
     #fig.suptitle('Motor Frequency')
     plt.xlabel('Time (ms)')
@@ -268,11 +269,11 @@ def graph_freq(MC_1, MC_2, MC_3, MC_4):
     
     plt.plot(MC_1.freq_count[0], MC_1.freq_count[1])
     plt.plot(MC_2.freq_count[0], MC_2.freq_count[1])
-    plt.plot(MC_3.freq_count[0], MC_3.freq_count[1])
-    plt.plot(MC_4.freq_count[0], MC_4.freq_count[1])
-    plt.legend([f"TEST1 - PWM target: {MC_1.pwm_target}%", f"TEST2 - PWM target: {MC_2.pwm_target}%", f"TEST3 - PWM target: {MC_3.pwm_target}%", f"TEST4 - PWM target: {MC_4.pwm_target}%"])
+    #plt.plot(MC_3.freq_count[0], MC_3.freq_count[1])
+    #plt.plot(MC_4.freq_count[0], MC_4.freq_count[1])
+    #plt.legend([f"TEST1 - PWM target: {MC_1.pwm_target}%", f"TEST2 - PWM target: {MC_2.pwm_target}%", f"TEST3 - PWM target: {MC_3.pwm_target}%", f"TEST4 - PWM target: {MC_4.pwm_target}%"])
     
-    #plt.legend([f"TEST1 - PWM target: {MC_1.pwm_target}%", f"TEST2 - PWM target: {MC_2.pwm_target}%"])
+    plt.legend([f"TEST1 - PWM target: {MC_1.pwm_target}%", f"TEST2 - PWM target: {MC_2.pwm_target}%"])
     plt.show()
 
 def start_sequence():
@@ -400,13 +401,13 @@ def run_main():
     print("This test will run 2 configurable modes. Please enter parameters below:")
     MOTOR_DURATION_MC1 = int(input("Enter duration 1: "))
     MOTOR_DURATION_MC2 = int(input("Enter duration 2: "))
-    MOTOR_DURATION_MC3 = int(input("Enter duration 3: "))
-    MOTOR_DURATION_MC4 = int(input("Enter duration 4: "))
+    #MOTOR_DURATION_MC3 = int(input("Enter duration 3: "))
+    #MOTOR_DURATION_MC4 = int(input("Enter duration 4: "))
 
     MOTOR_PWM_TARGET_MC1 = int(input("Enter target duty cycle 1: "))
     MOTOR_PWM_TARGET_MC2 = int(input("Enter target duty cycle 2: "))
-    MOTOR_PWM_TARGET_MC3 = int(input("Enter target duty cycle 3: "))
-    MOTOR_PWM_TARGET_MC4 = int(input("Enter target duty cycle 4: "))
+    #MOTOR_PWM_TARGET_MC3 = int(input("Enter target duty cycle 3: "))
+    #MOTOR_PWM_TARGET_MC4 = int(input("Enter target duty cycle 4: "))
 
     MC_1 = MotorController(PWM_PIN, MOTOR_EN_PIN, MOTOR_DURATION_MC1, MOTOR_PWM_TARGET_MC1)
     
@@ -415,8 +416,8 @@ def run_main():
         end_sequence(MC_1)
         return -1
     MC_2 = MotorController(PWM_PIN, MOTOR_EN_PIN, MOTOR_DURATION_MC2, MOTOR_PWM_TARGET_MC2)
-    MC_3 = MotorController(PWM_PIN, MOTOR_EN_PIN, MOTOR_DURATION_MC3, MOTOR_PWM_TARGET_MC3)
-    MC_4 = MotorController(PWM_PIN, MOTOR_EN_PIN, MOTOR_DURATION_MC4, MOTOR_PWM_TARGET_MC4)
+    #MC_3 = MotorController(PWM_PIN, MOTOR_EN_PIN, MOTOR_DURATION_MC3, MOTOR_PWM_TARGET_MC3)
+    #MC_4 = MotorController(PWM_PIN, MOTOR_EN_PIN, MOTOR_DURATION_MC4, MOTOR_PWM_TARGET_MC4)
     
     print('\033c')
     print("----PLEASE CONNECT MOTOR----\n")
@@ -462,7 +463,7 @@ def run_main():
         time.sleep(5)
         print("*****************************\n")
         print("----Testing Mode 3----")
-        
+        '''
         file3 = open("/home/pi/Documents/MOTOR_DATA_FOLDER/" + FILE_OUTPUT_NAME + " mode3_test", 'w', newline='')
         resp3, msg3 = run_motor(MC_3, file3)
         print(msg3)
@@ -493,11 +494,11 @@ def run_main():
             print("Restarting test program...")
             time.sleep(3)
             return -1
-        
+        '''
         MC_2.motor_results(resp2, msg2)
         
-        #graph_freq(MC_1, MC_2)
-        graph_freq(MC_1, MC_2, MC_3, MC_4)
+        graph_freq(MC_1, MC_2)
+        #graph_freq(MC_1, MC_2, MC_3, MC_4)
 
         #print('\033c')
         print("Please disconnect motor!\n")
@@ -508,8 +509,8 @@ def run_main():
     except KeyboardInterrupt:
         end_sequence(MC_1)
         end_sequence(MC_2)
-        end_sequence(MC_3)
-        end_sequence(MC_4)
+        #end_sequence(MC_3)
+        #end_sequence(MC_4)
         return 0
 
 if __name__ == "__main__":
