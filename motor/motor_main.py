@@ -178,6 +178,9 @@ class MotorController(object):
 
     def rampdown(self):
         print("Starting rampdown...")
+        #self.pi.hardware_PWM(19, 0, 0)
+        #return self.C_FUNCTIONS.motor_freewheel()
+
         for duty in range(self.pwm_current, 0, -1):
             self.pi.hardware_PWM(19, 25000, duty * 10000)
             print("PWM: {}".format(duty))
@@ -186,7 +189,7 @@ class MotorController(object):
         #GPIO.output(self.motor_pin, 0)
         # graph_data()
         #return 0
-
+        
     def shutdown(self):
     # This occurs when there is a danger event like a stall or overcurrent
     # In this case, we want to shut off everything immediately to prevent further damage
@@ -268,6 +271,8 @@ def graph_freq(MC_1, MC_2, MC_3, MC_4):
     plt.plot(MC_3.freq_count[0], MC_3.freq_count[1])
     plt.plot(MC_4.freq_count[0], MC_4.freq_count[1])
     plt.legend([f"TEST1 - PWM target: {MC_1.pwm_target}%", f"TEST2 - PWM target: {MC_2.pwm_target}%", f"TEST3 - PWM target: {MC_3.pwm_target}%", f"TEST4 - PWM target: {MC_4.pwm_target}%"])
+    
+    #plt.legend([f"TEST1 - PWM target: {MC_1.pwm_target}%", f"TEST2 - PWM target: {MC_2.pwm_target}%"])
     plt.show()
 
 def start_sequence():
@@ -344,7 +349,11 @@ def run_motor(MC, file):
                 return -1, msg
             if(temp_data[0] >= MC.motor_duration * 1000000):
                 MC.analog_terminate()
+                #print(hex(MC.rampdown()))
+                #time.sleep(10)
+                
                 MC.rampdown()
+                
                 msg = "Motor duration reached: {}".format(temp_data[0])
                 return 1, msg
         except KeyboardInterrupt:
@@ -432,7 +441,7 @@ def run_main():
             time.sleep(3)
             return -1
         MC_1.motor_results(resp1, msg1)
-        
+        time.sleep(5)
         #print('\033c')
         print("*****************************\n")
         print("----Testing Mode 2----")
@@ -450,7 +459,7 @@ def run_main():
             print("Restarting test program...")
             time.sleep(3)
             return -1
-        
+        time.sleep(5)
         print("*****************************\n")
         print("----Testing Mode 3----")
         
@@ -467,7 +476,7 @@ def run_main():
             print("Restarting test program...")
             time.sleep(3)
             return -1
-        
+        time.sleep(5)
         print("*****************************\n")
         print("----Testing Mode 4----")
         
@@ -475,7 +484,7 @@ def run_main():
         resp4, msg4 = run_motor(MC_4, file4)
         print(msg2)
         #end_sequence(MC_2)
-        if resp2 < 0:
+        if resp4 < 0:
             #print('\033c')
             print(msg2)
             while(message_display("\nType 'c' and ENTER to continue: ", 'c') != 1):
@@ -487,7 +496,7 @@ def run_main():
         
         MC_2.motor_results(resp2, msg2)
         
-        
+        #graph_freq(MC_1, MC_2)
         graph_freq(MC_1, MC_2, MC_3, MC_4)
 
         #print('\033c')

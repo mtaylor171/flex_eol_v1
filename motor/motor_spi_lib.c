@@ -330,6 +330,23 @@ int motor_ping(){
 	}
 }
 
+uint16_t motor_freewheel(){
+	int spi_timeout_counter = 0;
+	setAD5592Ch(1);
+	bcm2835_delay(10);
+	spiComs(0x0428);
+	bcm2835_delay(10);
+	while(spiIn[1] != 0x28){
+		spiComs(0x0428);  //Keeps trying to send first register command, in 100ms increments
+		bcm2835_delay(100); 
+		spi_timeout_counter ++;
+		if(spi_timeout_counter >= 50){
+			return 1;		//Timeout after 5 seconds of trying
+		}
+	}
+	return spiIn[1];
+}
+
 int initialize_adc(){
 	setAD5592Ch(0);
 	spiComs(AD5592_SW_RESET);
