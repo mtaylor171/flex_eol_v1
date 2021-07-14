@@ -446,7 +446,7 @@ def run_main():
             time.sleep(3)
             return -1
         MC_1.motor_results(resp1, msg1)
-        #time.sleep(5)
+        time.sleep(5)
         #print('\033c')
         print("*****************************\n")
         print("----Testing Mode 2----")
