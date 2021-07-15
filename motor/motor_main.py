@@ -3,7 +3,9 @@ import ctypes
 import numpy as np
 from numpy.ctypeslib import ndpointer
 import csv
-import matplotlib.pyplot as plt
+import matplotlib
+#matplotlib.use('Agg')
+from matplotlib import pyplot as plt
 import datetime
 from datetime import timedelta
 import time
@@ -82,13 +84,14 @@ class MotorController(object):
             ## TODO Raise exception here
             msg = "ERROR: Could not communicate with motor board. Please disconnect motor."
             return 0, msg
-        
-        #if input("Would you like to view the registers? (y/n): ").lower() == 'y':
-            #self._read_registers()
+        '''
+        if input("Would you like to view the registers? (y/n): ").lower() == 'y':
+            self._read_registers()
 
-            #if(input("\nAre Registers correct? (y/n): ").lower() != 'y'):
-                #msg = "Registers Not Selected to be Correct."
-                #return 0, msg
+            if(input("\nAre Registers correct? (y/n): ").lower() != 'y'):
+                msg = "Registers Not Selected to be Correct."
+                return 0, msg
+        '''
         if not self.C_FUNCTIONS.initialize_adc():
             print("\nADC Initialized Successfully\n")
         else:
@@ -446,7 +449,7 @@ def run_main():
             time.sleep(3)
             return -1
         MC_1.motor_results(resp1, msg1)
-        time.sleep(5)
+        time.sleep(2)
         #print('\033c')
         print("*****************************\n")
         print("----Testing Mode 2----")
@@ -501,7 +504,7 @@ def run_main():
         '''
         MC_2.motor_results(resp2, msg2)
         
-        graph_freq(MC_1, MC_2)
+        #graph_freq(MC_1, MC_2)
         #graph_freq(MC_1, MC_2, MC_3, MC_4)
 
         #print('\033c')
