@@ -78,7 +78,7 @@ class MotorController(object):
  
         while(1):
             adc_regs = self.C_FUNCTIONS.adc_setlow()
-            print(adc_regs)
+            print(hex(adc_regs))
             mesg = input("Continue? ").lower()
             if mesg == 'y':
                 break
