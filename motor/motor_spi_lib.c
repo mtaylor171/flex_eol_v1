@@ -360,7 +360,7 @@ int initialize_adc(){
 	bcm2835_delay(1);
 	bcm2835_delay(LONG_DELAY);
 	
-	return 0;
+	//return 0;
 }
 
 
@@ -379,8 +379,7 @@ uint16_t adc_setlow(){
 	bcm2835_delay(LONG_DELAY);
 	uint16_t result = ((spiIn[0] << 8) & 0xFF00) | (spiIn[1] & 0xFF);
 
-	int a
-	a = initialize_adc();
+	initialize_adc();
 	/* Return result */
 	return result;
 }
