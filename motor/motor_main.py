@@ -14,7 +14,7 @@ import random
 import RPi.GPIO as GPIO
 import os
 import pigpio
-#import calculate_rms
+import calculate_rms
 
 ACTIVE_CHANNELS = 8
 PWM_PIN = 19            # GPIO pin 19 for Motor PWM control
