@@ -419,38 +419,25 @@ def run_main():
     FILE_OUTPUT_NAME = str(datetime.datetime.now().replace(microsecond=0))
     file1 = open("/home/pi/Documents/MOTOR_DATA_FOLDER/" + FILE_OUTPUT_NAME + " mode1_test", 'w', newline='')
 
-    #MOTOR_DURATION_MC1 = int(input("Enter duration 1: "))
-    #MOTOR_DURATION_MC2 = int(input("Enter duration 2: "))
-    #MOTOR_DURATION_MC3 = int(input("Enter duration 3: "))
-    #MOTOR_DURATION_MC4 = int(input("Enter duration 4: "))
-
-    #MOTOR_PWM_TARGET_MC1 = int(input("Enter target duty cycle 1: "))
-    #MOTOR_PWM_TARGET_MC2 = int(input("Enter target duty cycle 2: "))
-    #MOTOR_PWM_TARGET_MC3 = int(input("Enter target duty cycle 3: "))
-    #MOTOR_PWM_TARGET_MC4 = int(input("Enter target duty cycle 4: "))
-
     MC_1 = MotorController(PWM_PIN, MOTOR_EN_PIN)
     
     resp, msg = MC_1.initialize()
     if not resp:
     	print(msg)
-    	pass # remove after testing user inputs
-        #end_sequence(MC_1)	#change back
-        #return -1			#Change back after testing user inputs
+    	end_sequence(MC_1)
+        return -1
     MC_2 = MotorController(PWM_PIN, MOTOR_EN_PIN)
-    #MC_3 = MotorController(PWM_PIN, MOTOR_EN_PIN)
-    #MC_4 = MotorController(PWM_PIN, MOTOR_EN_PIN)
     
     #print('\033c')
     print("*****************************")
-    print("This test will run 2 configurable modes. Please enter parameters below:")
+    print("This test will run 2 configurable modes. Please enter parameters below:\n")
     while(1):
     	if not (MC_1.user_settings(input("Enter Mode 1 target duty cycle (%):"), input("Enter Mode 1 duration (s):"))) and not (MC_2.user_settings(input("Enter Mode 2 target duty cycle (%):"), input("Enter Mode 2 duration (s):"))):
     		break
     	print("Settings were either incorrect or exceeded parameters. Please try again...\n")
 
     print(f"\nMode 1 settings: {MC_1.pwm_target}%, {MC_1.motor_duration}secs")
-    print(f"Mode 2 settings: {MC_2.pwm_target}%, {MC_2.motor_duration}secs")
+    print(f"Mode 2 settings: {MC_2.pwm_target}%, {MC_2.motor_duration}secs\n")
 
     #print('\033c')
     print("----PLEASE CONNECT MOTOR----\n")
