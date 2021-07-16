@@ -102,12 +102,12 @@ class MotorController(object):
         return 1, "Initialization complete!"
     
     def user_settings(self, pwm, duration):
-    	if (pwm.isnumeric()) and (pwm < 100):
-    		self.pwm_target = pwm
+    	if (pwm.isnumeric()) and (int(pwm) < 100):
+    		self.pwm_target = int(pwm)
     	else:
     		return 1
-    	if (duration.isnumeric()) and (duration < 300):
-    		self.motor_duration = duration 
+    	if (duration.isnumeric()) and (int(duration) < 300):
+    		self.motor_duration = int(duration) 
     	else:
     		return 1
     	return 0
@@ -419,9 +419,6 @@ def run_main():
     FILE_OUTPUT_NAME = str(datetime.datetime.now().replace(microsecond=0))
     file1 = open("/home/pi/Documents/MOTOR_DATA_FOLDER/" + FILE_OUTPUT_NAME + " mode1_test", 'w', newline='')
 
-    #print('\033c')
-    print("*****************************")
-    print("This test will run 2 configurable modes. Please enter parameters below:")
     #MOTOR_DURATION_MC1 = int(input("Enter duration 1: "))
     #MOTOR_DURATION_MC2 = int(input("Enter duration 2: "))
     #MOTOR_DURATION_MC3 = int(input("Enter duration 3: "))
@@ -443,7 +440,9 @@ def run_main():
     #MC_3 = MotorController(PWM_PIN, MOTOR_EN_PIN)
     #MC_4 = MotorController(PWM_PIN, MOTOR_EN_PIN)
     
-
+    #print('\033c')
+    print("*****************************")
+    print("This test will run 2 configurable modes. Please enter parameters below:")
     while(1):
     	if not (MC_1.user_settings(input("Enter Mode 1 target duty cycle (%):"), input("Enter Mode 1 duration (s):"))) or not (MC_2.user_settings(input("Enter Mode 2 target duty cycle (%):"), input("Enter Mode 2 duration (s):"))):
     		break
