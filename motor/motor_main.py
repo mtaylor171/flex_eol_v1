@@ -433,6 +433,7 @@ def run_main():
     
     resp, msg = MC_1.initialize()
     if not resp:
+    	print(msg)
     	pass # remove after testing user inputs
         #end_sequence(MC_1)	#change back
         #return -1			#Change back after testing user inputs
@@ -451,7 +452,7 @@ def run_main():
     print("Mode 1 settings: {MC_1.pwm_target}%, {MC_1.motor_duration}secs")
     print("Mode 1 settings: {MC_2.pwm_target}%, {MC_2.motor_duration}secs")
 
-    print('\033c')
+    #print('\033c')
     print("----PLEASE CONNECT MOTOR----\n")
     
     try:
