@@ -426,7 +426,7 @@ def run_main():
     	#end_sequence(MC_1)
     	#print(msg)
     	pass
-    	return -1
+    	#return -1
     MC_2 = MotorController(PWM_PIN, MOTOR_EN_PIN)
     
     #print('\033c')
