@@ -347,6 +347,23 @@ uint16_t motor_freewheel(){
 	return spiIn[1];
 }
 
+int initialize_adc(){
+	setAD5592Ch(0);
+	spiComs(AD5592_SW_RESET);
+	bcm2835_delay(1);
+	spiComs(0x1920);	//ADC gain 0-2Vref
+	bcm2835_delay(1);
+	spiComs(0x20FF); //Set all pins as ADC
+	analogInPins = 0xFF;
+	bcm2835_delay(1);
+	spiComs(0x5A00);	//Enable Internal reference
+	bcm2835_delay(1);
+	bcm2835_delay(LONG_DELAY);
+	
+	return 0;
+}
+
+
 uint16_t adc_setlow(){
 	AD5592_Init();
 	setAD5592Ch(0);
@@ -366,22 +383,6 @@ uint16_t adc_setlow(){
 	a = initialize_adc();
 	/* Return result */
 	return result;
-}
-
-int initialize_adc(){
-	setAD5592Ch(0);
-	spiComs(AD5592_SW_RESET);
-	bcm2835_delay(1);
-	spiComs(0x1920);	//ADC gain 0-2Vref
-	bcm2835_delay(1);
-	spiComs(0x20FF); //Set all pins as ADC
-	analogInPins = 0xFF;
-	bcm2835_delay(1);
-	spiComs(0x5A00);	//Enable Internal reference
-	bcm2835_delay(1);
-	bcm2835_delay(LONG_DELAY);
-	
-	return 0;
 }
 
 int initialize_motor(){
