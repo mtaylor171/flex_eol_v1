@@ -311,8 +311,8 @@ def start_sequence():
     try:
         while(MC_start.bcm2835_motor_ping()):
         	break
-            #pass 			#change back
-        #print('\033c')
+            #pass
+        print('\033c')
         print("*****************************")
         print("Motor Board Connected!")
         print("*****************************")
@@ -447,10 +447,10 @@ def run_main():
     while(1):
     	if not (MC_1.user_settings(input("Enter Mode 1 target duty cycle (%):"), input("Enter Mode 1 duration (s):"))) and not (MC_2.user_settings(input("Enter Mode 2 target duty cycle (%):"), input("Enter Mode 2 duration (s):"))):
     		break
-    	print("Settings were either incorrect or exceeded parameters. Please try again...")
+    	print("Settings were either incorrect or exceeded parameters. Please try again...\n")
 
-    print(f"Mode 1 settings: {MC_1.pwm_target}%, {MC_1.motor_duration}secs")
-    print(f"Mode 1 settings: {MC_2.pwm_target}%, {MC_2.motor_duration}secs")
+    print(f"\nMode 1 settings: {MC_1.pwm_target}%, {MC_1.motor_duration}secs")
+    print(f"Mode 2 settings: {MC_2.pwm_target}%, {MC_2.motor_duration}secs")
 
     #print('\033c')
     print("----PLEASE CONNECT MOTOR----\n")
