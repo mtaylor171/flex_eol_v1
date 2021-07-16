@@ -77,7 +77,7 @@ class MotorController(object):
 
  
         while(1):
-            adc_regs = C_FUNCTIONS.adc_setlow()
+            adc_regs = self.C_FUNCTIONS.adc_setlow()
             print(adc_regs)
             mesg = input("Continue? ").lower()
             if mesg == 'y':
