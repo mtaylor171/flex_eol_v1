@@ -310,8 +310,7 @@ def start_sequence():
 
     try:
         while(MC_start.bcm2835_motor_ping()):
-            break
-            #pass
+            pass
         print('\033c')
         print("*****************************")
         print("Motor Board Connected!")
@@ -423,10 +422,9 @@ def run_main():
     
     resp, msg = MC_1.initialize()
     if not resp:
-    	#end_sequence(MC_1)
-    	#print(msg)
-    	pass
-    	#return -1
+    	end_sequence(MC_1)
+    	print(msg)
+    	return -1
     MC_2 = MotorController(PWM_PIN, MOTOR_EN_PIN)
     
     #print('\033c')
