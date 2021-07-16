@@ -352,9 +352,11 @@ uint16_t adc_setlow(){
 	setAD5592Ch(0);
 	spiComs(AD5592_SW_RESET);
 	bcm2835_delay(10);
-	spiComs(0x3007);		//Set channels 0-2 as pull-down
+	//spiComs(0x3007);		//Set channels 0-2 as pull-down
+	spiComs(0x40FF);
 	bcm2835_delay(LONG_DELAY);
-	spiComs(0x3858);
+	//spiComs(0x3858);
+	spiComs(0x4800);
 	spiComs(AD5592_NOP);
 	//spiComs(AD5592_NOP);
 	bcm2835_delay(LONG_DELAY);
