@@ -337,8 +337,9 @@ def run_motor(MC, file):
 
     resp, msg = MC.initialize()
     if not resp:
-        end_sequence(MC)
-        return -1, msg
+    	pass
+        #end_sequence(MC)
+        #return -1, msg
 
     MC.analog_in_initial_send()
 
@@ -429,7 +430,7 @@ def run_main():
     MC_2 = MotorController(PWM_PIN, MOTOR_EN_PIN)
     
     #print('\033c')
-    print("*****************************")
+    #print("*****************************")
     print("This test will run 2 configurable modes. Please enter parameters below:\n")
     while(1):
     	if not (MC_1.user_settings(input("Enter Mode 1 target duty cycle (%):"), input("Enter Mode 1 duration (s):"))) and not (MC_2.user_settings(input("Enter Mode 2 target duty cycle (%):"), input("Enter Mode 2 duration (s):"))):
