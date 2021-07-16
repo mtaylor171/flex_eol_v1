@@ -50,7 +50,7 @@ class MotorController(object):
         self.INITIAL_US = get_us()
         
         ## Default values
-        self.pwm_current = 24
+        self.pwm_current = 14
         self.position_hold_time = 0
         self.position_counter = 0
         self.data = []
