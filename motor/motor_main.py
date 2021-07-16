@@ -52,7 +52,7 @@ class MotorController(object):
         self.INITIAL_US = get_us()
         
         ## Default values
-        self.pwm_current = 14
+        self.pwm_current = 24
         self.position_hold_time = 0
         self.position_counter = 0
         self.data = []
@@ -405,7 +405,7 @@ def run_main():
     FILE_OUTPUT_NAME = str(datetime.datetime.now().replace(microsecond=0))
     file1 = open("/home/pi/Documents/MOTOR_DATA_FOLDER/" + FILE_OUTPUT_NAME + " mode1_test", 'w', newline='')
 
-    print('\033c')
+    #print('\033c')
     print("*****************************")
     print("This test will run 2 configurable modes. Please enter parameters below:")
     MOTOR_DURATION_MC1 = int(input("Enter duration 1: "))
@@ -463,7 +463,8 @@ def run_main():
         if resp2 < 0:
             #print('\033c')
             print(msg2)
-            while(message_display("\nType 'c' and ENTER to continue: ", 'c') != 1):
+            print("***Please Disconnect Motor***")
+            while(message_display("\nType 'c' and ENTER once motor disconnected: ", 'c') != 1):
                 pass
             print('\033c')
             print("Restarting test program...")
@@ -505,7 +506,7 @@ def run_main():
             return -1
         '''
         
-        rms1, rms2 = calculate_rms(FILE_OUTPUT_NAME + " mode1_test", FILE_OUTPUT_NAME + " mode2_test")
+        rms1, rms2 = calculate_rms.main(FILE_OUTPUT_NAME + " mode1_test", FILE_OUTPUT_NAME + " mode2_test")
 
         print(f"Phase RMS for mode1 [A, B, C]: {rms1}")
         print(f"Phase RMS for mode2 [A, B, C]: {rms2}")

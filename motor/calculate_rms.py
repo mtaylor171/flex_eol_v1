@@ -27,20 +27,21 @@ class RMS_calc(object):
             temp_rms = 0
             for j in range(1,len(self.y[0])):
                 temp_sum += (2 * ((self.y[i][j])**2) * (self.x[j] - self.x[j-1]))
-            temp_rms = temp_sum/(self.x[len(y[0]) - 1] - self.x[0])
+            temp_rms = temp_sum/(self.x[len(self.y[0]) - 1] - self.x[0])
             self.rms.append(round((math.sqrt(temp_rms))/1000, 3))
+        return self.rms
 
 def main(filename_1, filename_2):
-    rms1 = RMS_calc()
-    rms2 = RMS_calc()
+    rms1 = RMS_calc(filename_1)
+    rms2 = RMS_calc(filename_2)
 
-    rms1.collect_data(filename_1)
-    rms2.collect_data(filename_2)
+    rms1.collect_data()
+    rms2.collect_data()
 
     rms1_val = rms1.calc()
     rms2_val = rms2.calc()
 
-    return rms1_val. rms2_val
+    return rms1_val, rms2_val
     
 
 '''
