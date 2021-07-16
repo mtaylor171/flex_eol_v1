@@ -361,6 +361,9 @@ uint16_t adc_setlow(){
 	//spiComs(AD5592_NOP);
 	bcm2835_delay(LONG_DELAY);
 	uint16_t result = ((spiIn[0] << 8) & 0xFF00) | (spiIn[1] & 0xFF);
+
+	int a
+	a = initialize_adc()
 	/* Return result */
 	return result;
 }
