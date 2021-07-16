@@ -40,15 +40,13 @@ class MotorController(object):
     SO_FILE = os.path.dirname(os.path.realpath(__file__)) + "/motor_spi_lib.so"
     C_FUNCTIONS = CDLL(SO_FILE)
     
-    def __init__(self, pwm_pin, motor_pin, motor_duration, pwm_target, mode = GPIO.BOARD, freq = 25000, warnings = False):
+    def __init__(self, pwm_pin, motor_pin, mode = GPIO.BOARD, freq = 25000, warnings = False):
         GPIO.setwarnings(warnings)
         GPIO.setmode(mode)
         GPIO.setup(motor_pin, GPIO.OUT)
         self.pwm_pin = pwm_pin
         self.motor_pin = motor_pin
         self.pi = pigpio.pi()
-        self.motor_duration = motor_duration
-        self.pwm_target = pwm_target
         self.INITIAL_US = get_us()
         
         ## Default values
@@ -62,6 +60,8 @@ class MotorController(object):
         self.current_rev_time = 0
         self.last_rev_time = 0
         self.master_pos_counter = 0
+        self.pwm_current = 0
+        self.motor_duration = 0
 
         self.kX1 = 0.0
         self.kV1 = 0.0
@@ -101,6 +101,19 @@ class MotorController(object):
 
         return 1, "Initialization complete!"
     
+    def user_settings(self, pwm, duration):
+    	if (pwm.isnumeric()) and (pwm < 100):
+    		self.pwm_target = pwm
+    	else:
+    		return 1
+    	if (duration.isnumeric()) and (duration < 300):
+    		self.motor_duration = duration 
+    	else:
+    		return 1
+    	return 0
+
+
+
     def analog_in_initial_send(self):
         self.C_FUNCTIONS.getAnalogInAll_InitialSend()
 
@@ -297,7 +310,8 @@ def start_sequence():
 
     try:
         while(MC_start.bcm2835_motor_ping()):
-            pass
+        	break
+            #pass 			#change back
         #print('\033c')
         print("*****************************")
         print("Motor Board Connected!")
@@ -408,26 +422,36 @@ def run_main():
     #print('\033c')
     print("*****************************")
     print("This test will run 2 configurable modes. Please enter parameters below:")
-    MOTOR_DURATION_MC1 = int(input("Enter duration 1: "))
-    MOTOR_DURATION_MC2 = int(input("Enter duration 2: "))
+    #MOTOR_DURATION_MC1 = int(input("Enter duration 1: "))
+    #MOTOR_DURATION_MC2 = int(input("Enter duration 2: "))
     #MOTOR_DURATION_MC3 = int(input("Enter duration 3: "))
     #MOTOR_DURATION_MC4 = int(input("Enter duration 4: "))
 
-    MOTOR_PWM_TARGET_MC1 = int(input("Enter target duty cycle 1: "))
-    MOTOR_PWM_TARGET_MC2 = int(input("Enter target duty cycle 2: "))
+    #MOTOR_PWM_TARGET_MC1 = int(input("Enter target duty cycle 1: "))
+    #MOTOR_PWM_TARGET_MC2 = int(input("Enter target duty cycle 2: "))
     #MOTOR_PWM_TARGET_MC3 = int(input("Enter target duty cycle 3: "))
     #MOTOR_PWM_TARGET_MC4 = int(input("Enter target duty cycle 4: "))
 
-    MC_1 = MotorController(PWM_PIN, MOTOR_EN_PIN, MOTOR_DURATION_MC1, MOTOR_PWM_TARGET_MC1)
+    MC_1 = MotorController(PWM_PIN, MOTOR_EN_PIN)
     
     resp, msg = MC_1.initialize()
     if not resp:
-        end_sequence(MC_1)
-        return -1
-    MC_2 = MotorController(PWM_PIN, MOTOR_EN_PIN, MOTOR_DURATION_MC2, MOTOR_PWM_TARGET_MC2)
-    #MC_3 = MotorController(PWM_PIN, MOTOR_EN_PIN, MOTOR_DURATION_MC3, MOTOR_PWM_TARGET_MC3)
-    #MC_4 = MotorController(PWM_PIN, MOTOR_EN_PIN, MOTOR_DURATION_MC4, MOTOR_PWM_TARGET_MC4)
+    	pass # remove after testing user inputs
+        #end_sequence(MC_1)	#change back
+        #return -1			#Change back after testing user inputs
+    MC_2 = MotorController(PWM_PIN, MOTOR_EN_PIN)
+    #MC_3 = MotorController(PWM_PIN, MOTOR_EN_PIN)
+    #MC_4 = MotorController(PWM_PIN, MOTOR_EN_PIN)
     
+
+    while(1):
+    	if not MC_1.user_settings(input("Enter Mode 1 target duty cycle (%):"), input("Enter Mode 1 duration (s):")) or MC_2.user_settings(input("Enter Mode 2 target duty cycle (%):")), int(input("Enter Mode 2 duration (s):")):
+    		break
+    	print("Settings were either incorrect or exceeded parameters. Please try again...")
+
+    print("Mode 1 settings: {MC_1.pwm_target}%, {MC_1.motor_duration}secs")
+    print("Mode 1 settings: {MC_2.pwm_target}%, {MC_2.motor_duration}secs")
+
     print('\033c')
     print("----PLEASE CONNECT MOTOR----\n")
     
