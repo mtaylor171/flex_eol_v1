@@ -347,6 +347,20 @@ uint16_t motor_freewheel(){
 	return spiIn[1];
 }
 
+uint16_t adc_setlow(){
+	AD5592_Init();
+	setAD5592Ch(0);
+	spiComs(AD5592_SW_RESET);
+	bcm2835_delay(10);
+	spiComs(0x3007);		//Set channels 0-2 as pull-down
+	bcm2835_delay(LONG_DELAY);
+	spiComs(AD5592_NOP);
+	bcm2835_delay(LONG_DELAY);
+	uint16_t result = ((spiIn[0] << 8) & 0x0F00) | (spiIn[1] & 0xFF);
+	/* Return result */
+	return result;
+}
+
 int initialize_adc(){
 	setAD5592Ch(0);
 	spiComs(AD5592_SW_RESET);
