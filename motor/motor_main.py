@@ -423,8 +423,9 @@ def run_main():
     
     resp, msg = MC_1.initialize()
     if not resp:
-    	end_sequence(MC_1)
-    	print(msg)
+    	#end_sequence(MC_1)
+    	#print(msg)
+    	pass
     	return -1
     MC_2 = MotorController(PWM_PIN, MOTOR_EN_PIN)
     
