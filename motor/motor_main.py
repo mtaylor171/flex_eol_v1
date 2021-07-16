@@ -74,6 +74,18 @@ class MotorController(object):
         print("\n*****************************\n")
         msg = ""
         self.pi.hardware_PWM(19, 0, 0)
+
+ 
+        while(1):
+            adc_regs = C_FUNCTIONS.adc_setlow():
+            print(adc_regs)
+            mesg = input("Continue? ").lower()
+            if mesg == 'y':
+                break
+            else:
+                pass
+
+
         GPIO.output(self.motor_pin, 1)
         self.INITIAL_US = get_us()
         _self_check = self.C_FUNCTIONS.initialize_motor()
@@ -308,7 +320,11 @@ def start_sequence():
     print("Waiting on motor board to power up...")
     print("(NOTE: Hold CTRL + 'C' to exit program)\n")
 
+
     try:
+    	resp, msg = MC_start.initialize()
+    	return 1
+    	'''
         while(MC_start.bcm2835_motor_ping()):
             pass
         print('\033c')
@@ -319,6 +335,7 @@ def start_sequence():
         #end_sequence(MC_start)
         
         return 1
+        '''
 
     except KeyboardInterrupt:
         end_sequence(MC_start)
