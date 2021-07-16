@@ -449,8 +449,8 @@ def run_main():
     		break
     	print("Settings were either incorrect or exceeded parameters. Please try again...")
 
-    print("Mode 1 settings: {MC_1.pwm_target}%, {MC_1.motor_duration}secs")
-    print("Mode 1 settings: {MC_2.pwm_target}%, {MC_2.motor_duration}secs")
+    print(f"Mode 1 settings: {MC_1.pwm_target}%, {MC_1.motor_duration}secs")
+    print(f"Mode 1 settings: {MC_2.pwm_target}%, {MC_2.motor_duration}secs")
 
     #print('\033c')
     print("----PLEASE CONNECT MOTOR----\n")
