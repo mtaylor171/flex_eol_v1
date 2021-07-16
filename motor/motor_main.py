@@ -337,9 +337,8 @@ def run_motor(MC, file):
 
     resp, msg = MC.initialize()
     if not resp:
-    	pass
-        #end_sequence(MC)
-        #return -1, msg
+        end_sequence(MC)
+        return -1, msg
 
     MC.analog_in_initial_send()
 
@@ -425,8 +424,9 @@ def run_main():
     resp, msg = MC_1.initialize()
     if not resp:
     	print(msg)
-    	end_sequence(MC_1)
-    	return -1
+    	pass
+    	#end_sequence(MC_1)
+    	#return -1
     MC_2 = MotorController(PWM_PIN, MOTOR_EN_PIN)
     
     #print('\033c')
