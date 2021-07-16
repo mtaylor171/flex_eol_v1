@@ -14,7 +14,7 @@ import random
 import RPi.GPIO as GPIO
 import os
 import pigpio
-import calculate_rms
+#import calculate_rms
 
 ACTIVE_CHANNELS = 8
 PWM_PIN = 19            # GPIO pin 19 for Motor PWM control
@@ -109,6 +109,7 @@ class MotorController(object):
     def pwm_control(self):
         if(self.pwm_current < self.pwm_target):
             self.pwm_current += 1
+            print(self.pwm_current)
             #print("PWM: {}".format(self.pwm_current))
         self.pi.hardware_PWM(19, 25000, self.pwm_current * 10000)
 
@@ -503,12 +504,12 @@ def run_main():
             time.sleep(3)
             return -1
         '''
-
+        
         rms1, rms2 = calculate_rms(FILE_OUTPUT_NAME + " mode1_test", FILE_OUTPUT_NAME + " mode2_test")
 
         print(f"Phase RMS for mode1 [A, B, C]: {rms1}")
         print(f"Phase RMS for mode2 [A, B, C]: {rms2}")
-
+        
         MC_2.motor_results(resp2, msg2)
         
         #graph_freq(MC_1, MC_2)
