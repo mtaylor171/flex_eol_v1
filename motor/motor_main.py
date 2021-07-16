@@ -444,7 +444,7 @@ def run_main():
     print("*****************************")
     print("This test will run 2 configurable modes. Please enter parameters below:")
     while(1):
-    	if not (MC_1.user_settings(input("Enter Mode 1 target duty cycle (%):"), input("Enter Mode 1 duration (s):"))) or not (MC_2.user_settings(input("Enter Mode 2 target duty cycle (%):"), input("Enter Mode 2 duration (s):"))):
+    	if not (MC_1.user_settings(input("Enter Mode 1 target duty cycle (%):"), input("Enter Mode 1 duration (s):"))) and not (MC_2.user_settings(input("Enter Mode 2 target duty cycle (%):"), input("Enter Mode 2 duration (s):"))):
     		break
     	print("Settings were either incorrect or exceeded parameters. Please try again...")
 
