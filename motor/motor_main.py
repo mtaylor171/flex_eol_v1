@@ -31,7 +31,7 @@ def get_us():
     now = time.perf_counter()
     return now
 
-# returns the elapsed time by subtracting the timestamp provided by the current time 
+# returns the elapsed time by subtracting the timestamp provided by the current time n
 def get_elapsed_us(timestamp):
     temp = get_us()
     return (temp - timestamp)
@@ -75,7 +75,7 @@ class MotorController(object):
         msg = ""
         self.pi.hardware_PWM(19, 0, 0)
 
- 
+        '''
         while(1):
             adc_regs = self.C_FUNCTIONS.adc_setlow()
             print(hex(adc_regs))
@@ -84,7 +84,11 @@ class MotorController(object):
                 break
             else:
                 pass
+        '''
 
+        _self_check = self.C_FUNCTIONS.adc_setlow()
+        if not _self_check:
+            print("Motor inputs pulled LOW, ready to initialize motor driver.")
 
         GPIO.output(self.motor_pin, 1)
         self.INITIAL_US = get_us()
@@ -144,6 +148,9 @@ class MotorController(object):
     def bcm2835_motor_ping(self):
         GPIO.output(self.motor_pin, 1)
         return self.C_FUNCTIONS.motor_ping()
+
+        if not self.C_FUNCTIONS.initialize_adc():
+            pass
 
     def get_analog_data(self):
         return self.C_FUNCTIONS.getAnalogInAll_Receive()
@@ -322,9 +329,11 @@ def start_sequence():
 
 
     try:
-    	resp, msg = MC_start.initialize()
-    	return 1
-    	'''
+    	#resp, msg = MC_start.initialize()
+    	#return 1
+        if not MC_start.C_FUNCTIONS.adc_setlow():
+            pass
+
         while(MC_start.bcm2835_motor_ping()):
             pass
         print('\033c')
@@ -335,7 +344,7 @@ def start_sequence():
         #end_sequence(MC_start)
         
         return 1
-        '''
+        
 
     except KeyboardInterrupt:
         end_sequence(MC_start)

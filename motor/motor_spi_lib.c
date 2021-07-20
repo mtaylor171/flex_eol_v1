@@ -364,24 +364,27 @@ int initialize_adc(){
 }
 
 
-uint16_t adc_setlow(){
+int adc_setlow(){
 	AD5592_Init();
 	setAD5592Ch(0);
 	spiComs(AD5592_SW_RESET);
 	bcm2835_delay(10);
-	//spiComs(0x3007);		//Set channels 0-2 as pull-down
-	spiComs(0x40FF);
+	//spiComs(0x3007);		// Set channels 0-2 as pull-down
+	spiComs(0x4007);		// Sets channels IO 0-2 as GPIO
+	bcm2835_delay(10);
+	spiComs(0x4800);		// Writes 0 to GPIO pins
 	bcm2835_delay(LONG_DELAY);
 	//spiComs(0x3858);
-	spiComs(0x4800);
-	spiComs(AD5592_NOP);
+	//spiComs(0x4800);
 	//spiComs(AD5592_NOP);
-	bcm2835_delay(LONG_DELAY);
-	uint16_t result = ((spiIn[0] << 8) & 0xFF00) | (spiIn[1] & 0xFF);
+	//spiComs(AD5592_NOP);
+	//bcm2835_delay(LONG_DELAY);
+	//uint16_t result = ((spiIn[0] << 8) & 0xFF00) | (spiIn[1] & 0xFF);
 
-	initialize_adc();
+	//initialize_adc();
 	/* Return result */
-	return result;
+	//return result;
+	return 0;
 }
 
 int initialize_motor(){
