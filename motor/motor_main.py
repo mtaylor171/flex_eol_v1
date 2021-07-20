@@ -50,7 +50,7 @@ class MotorController(object):
         self.INITIAL_US = get_us()
         
         ## Default values
-        self.pwm_current = 14
+        self.pwm_current = 19
         self.position_hold_time = 0
         self.position_counter = 0
         self.data = []
@@ -60,7 +60,7 @@ class MotorController(object):
         self.current_rev_time = 0
         self.last_rev_time = 0
         self.master_pos_counter = 0
-        self.pwm_current = 0
+        self.pwm_target = 0
         self.motor_duration = 0
 
         self.kX1 = 0.0
@@ -332,9 +332,12 @@ def start_sequence():
     	#resp, msg = MC_start.initialize()
     	#return 1
         if not MC_start.C_FUNCTIONS.adc_setlow():
+            print("ADC set low")
             pass
 
         while(MC_start.bcm2835_motor_ping()):
+            pass
+        if not MC_start.C_FUNCTIONS.initialize_adc():
             pass
         print('\033c')
         print("*****************************")
@@ -507,9 +510,10 @@ def run_main():
             time.sleep(3)
             return -1
         #time.sleep(5)
+        '''
         print("*****************************\n")
         print("----Testing Mode 3----")
-        '''
+        
         file3 = open("/home/pi/Documents/MOTOR_DATA_FOLDER/" + FILE_OUTPUT_NAME + " mode3_test", 'w', newline='')
         resp3, msg3 = run_motor(MC_3, file3)
         print(msg3)
@@ -549,7 +553,7 @@ def run_main():
         
         MC_2.motor_results(resp2, msg2)
         
-        #graph_freq(MC_1, MC_2)
+        graph_freq(MC_1, MC_2)
         #graph_freq(MC_1, MC_2, MC_3, MC_4)
 
         #print('\033c')
