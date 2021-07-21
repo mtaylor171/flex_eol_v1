@@ -162,6 +162,7 @@ class MotorController(object):
 
     def health_check(self, temp_data):
         code = [0,0,0]
+        self.csv_data = []
         for i in range(1,4): # Turning Hall sensor channel data into a 3-digit position code
             if(temp_data[i] > 1500): # Set a threshold of 1650mV for the hall pulse
                 code[i-1] = 1
@@ -178,7 +179,7 @@ class MotorController(object):
                     self.current_rev_time = get_us()
                     freq = self._get_rpm(self.current_rev_time, self.last_rev_time)
                     self.running_filter(freq)
-                    self.csv_data[0] = temp_data[0]
+                    self.csv_data.append(temp_data[0])
                     self._calculate_rms(self.last_current_index, len(self.data[0]) - 1)
                     self.last_current_index = len(self.data[0]) - 1
                     self.position_counter = 0
