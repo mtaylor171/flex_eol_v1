@@ -183,7 +183,7 @@ class MotorController(object):
                 if(self.position_counter == 30):
                     self.current_rev_time = get_us()
                     self.freq = self._get_rpm(self.current_rev_time, self.last_rev_time)
-                    self.running_filter(freq)
+                    #self.running_filter(freq)
                     #self._calculate_rms(self.last_current_index, (len(self.data[0]) - 1))
                     #self.last_current_index = (len(self.data[0]) - 1)
                     #self.csv_data.insert(1, round(freq, 1))
@@ -211,9 +211,9 @@ class MotorController(object):
         if(temp_data[0] - self.data[0][self.last_current_index - 1] >= 200000):
             self._calculate_rms(self.last_current_index - 1, (len(self.data[0]) - 1))
             self.last_current_index = (len(self.data[0]))
-            self.csv_data.insert(1, round(freq, 1))
+            self.csv_data.insert(1, round(self.freq, 1))
 
-            print("Time: {} ".format(round(get_elapsed_us(self.INITIAL_US), 1)) + "PWM: {} ".format(self.pwm_current) + "RPM: {} ".format(round(freq, 1)) + "Current: {}".format(self.csv_data[2:]))
+            print("Time: {} ".format(round(get_elapsed_us(self.INITIAL_US), 1)) + "PWM: {} ".format(self.pwm_current) + "RPM: {} ".format(round(self.freq, 1)) + "Current: {}".format(self.csv_data[2:]))
 
             writer = csv.writer(self.file)
             writer.writerow(self.rms_avg)
@@ -290,8 +290,8 @@ class MotorController(object):
             temp_sum = 0
             temp_rms = 0
             for j in range(c_start, c_finish+1):
-                temp_sum += (2 * ((self.data[i][j])**2) * (self.data[0][j] - self.data[0][j-1]))
-            temp_rms = temp_sum/(self.data[0][c_finish] - self.data[0][c_start])
+                temp_sum += (2 * ((self.data[i][j])**2) * ((self.data[0][j] - self.data[0][j-1]) / 1000))
+            temp_rms = temp_sum/((self.data[0][c_finish] - self.data[0][c_start])/1000)
             temp_rms = round((math.sqrt(temp_rms))/1000, 3)
             self.csv_data.append(temp_rms)
             self.rms_data_full[i-3].append(self.data[0][c_finish])
