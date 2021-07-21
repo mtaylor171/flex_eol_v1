@@ -267,8 +267,11 @@ class MotorController(object):
             temp_rms = 0
             for j in range(c_start, c_finish):
                 temp_sum += (2 * ((self.data[i][j])**2) * (self.data[0][j] - self.data[0][j-1]))
+                print(f"temp sum: {temp_sum}")
             temp_rms = temp_sum/(self.data[0][c_finish] - self.data[0][c_start])
+            print(f"temp rms: {temp_rms}")
             temp_rms = round((math.sqrt(temp_rms))/1000, 3)
+            print(f"temp rms: {temp_rms}")
             self.csv_data.append(temp_rms)
 
 
