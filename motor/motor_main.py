@@ -183,13 +183,14 @@ class MotorController(object):
                     self.running_filter(freq)
                     self._calculate_rms(self.last_current_index, (len(self.data[0]) - 1))
                     self.last_current_index = (len(self.data[0]) - 1)
+                    self.csv_data.insert(1, round(freq, 1))
                     print(self.csv_data)
                     writer = csv.writer(self.file)
                     writer.writerow(self.csv_data)
                     self.position_counter = 0
                     self.last_rev_time = self.current_rev_time
                     print('\033c')
-                    print("Time: {} ".format(round(get_elapsed_us(self.INITIAL_US), 1)) + "PWM: {} ".format(self.pwm_current) + "RPM: {} ".format(round(freq, 1)) + "Current: {}".format(self.csv_data[1:]))
+                    print("Time: {} ".format(round(get_elapsed_us(self.INITIAL_US), 1)) + "PWM: {} ".format(self.pwm_current) + "RPM: {} ".format(round(freq, 1)) + "Current: {}".format(self.csv_data[2:]))
                     #print('\033c')
                     #print("RPM: {} ".format(freq))
                 else:
