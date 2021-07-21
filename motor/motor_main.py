@@ -261,7 +261,7 @@ class MotorController(object):
         print("-----------------------------\n")
 
     def _calculate_rms(self, c_start, c_finish):
-        '''
+        
         print(c_start)
         print(c_finish)
         #self.rms_data[0].append(self.data[0][c_finish])
@@ -278,7 +278,7 @@ class MotorController(object):
             temp_rms = round((math.sqrt(temp_rms))/1000, 3)
             #print(f"temp rms: {temp_rms}")
             self.csv_data.append(temp_rms)
-        '''
+        
 
 
     def _read_registers(self):
@@ -453,15 +453,15 @@ def run_motor(MC):
 
 def data_process(data):
     index = ((data >> 12) & 0x7)
-    data_converted = int(data & 0xFFF)
+    data_converted = int(data & 0xFFF) * (5000/4095)
     if index in range(0,3): # Channels 0-2 are hall sensors - use voltage translation
-        adc_reading = data_converted * (5000/4095)
+        adc_reading = data_converted
     elif index in range(3,6): # Channes 3-5 are current sensors - use current translation
         #adc_reading = (3000 - data_converted)
         if data_converted >= 3000:
             adc_reading = 0
         else:
-            adc_reading = (10 * (3000 - (data_converted * (5000/4095))))
+            adc_reading = (10 * (3000 - data_converted))
     elif index in range(6,8):
         adc_reading = ((data_converted - 409.5) * 0.7535795) + 25
         #adc_reading = int(((data_converted - 409.5) * 0.7535795) + 25)
