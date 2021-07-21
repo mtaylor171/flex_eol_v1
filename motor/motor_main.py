@@ -512,8 +512,9 @@ def run_main():
     	return -1
     MC_2 = MotorController(file2)
     
-    #print('\033c')
+    print('\033c')
     print("*****************************")
+    print(f"FILES FOR THIS TEST WILL BE SAVED WITH THE TIMESTAMP: {FILE_OUTPUT_NAME}")
     print("This test will run 2 configurable modes. Please enter parameters below:\n")
     while(1):
     	if not (MC_1.user_settings(input("Enter Mode 1 target duty cycle (%):"), input("Enter Mode 1 duration (s):"))) and not (MC_2.user_settings(input("Enter Mode 2 target duty cycle (%):"), input("Enter Mode 2 duration (s):"))):
