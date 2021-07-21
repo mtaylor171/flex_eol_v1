@@ -266,7 +266,7 @@ class MotorController(object):
         #print(c_start)
         #print(c_finish)
         #self.rms_data[0].append(self.data[0][c_finish])
-        self.csv_data.append(self.data[c_finish])
+        self.csv_data.append(self.data[0][c_finish])
         for i in range(4, 7):
             temp_sum = 0
             temp_rms = 0
