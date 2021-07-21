@@ -182,8 +182,8 @@ class MotorController(object):
                     freq = self._get_rpm(self.current_rev_time, self.last_rev_time)
                     self.running_filter(freq)
                     self.csv_data.append(temp_data[0])
-                    self._calculate_rms(self.last_current_index, (len(self.data[6]) - 1))
-                    self.last_current_index = (len(self.data[6]) - 1)
+                    self._calculate_rms(self.last_current_index, (len(self.data[0]) - 1))
+                    self.last_current_index = (len(self.data[0]) - 1)
                     print(self.csv_data)
                     writer = csv.writer(self.file)
                     writer.writerow(self.csv_data)
@@ -262,14 +262,14 @@ class MotorController(object):
         print("-----------------------------\n")
 
     def _calculate_rms(self, c_start, c_finish):
-        '''
+        
         #print(c_start)
         #print(c_finish)
         #self.rms_data[0].append(self.data[0][c_finish])
         for i in range(4, 7):
             temp_sum = 0
             temp_rms = 0
-            for j in range(c_start, c_finish):
+            for j in range(c_start, c_finish+1):
                 #print(f"start time: {self.data[0][j-1]}, finish time: {self.data[0][j]}")
                 print(f"Length of data {i}: {len(self.data[i])}")
                 print(f"index being accessed: {j}")
@@ -280,12 +280,12 @@ class MotorController(object):
                 #print(f"temp sum: {temp_sum}")
             print(f"c finish: {c_finish}")
             print(f"c start: {c_start}")
-            temp_rms = temp_sum/(self.data[0][c_finish - 1] - self.data[0][c_start])
+            temp_rms = temp_sum/(self.data[0][c_finish] - self.data[0][c_start])
             #print(f"temp rms: {temp_rms}")
             temp_rms = round((math.sqrt(temp_rms))/1000, 3)
             #print(f"temp rms: {temp_rms}")
             self.csv_data.append(temp_rms)
-        '''
+        
 
 
     def _read_registers(self):
