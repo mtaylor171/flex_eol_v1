@@ -20,7 +20,7 @@ def collect_data():
             x.append(int(row[0]))
             for i in range(1,int(display_num)+1):
                 #y.append([])
-                y[i-1].append(int(row[i]))
+                y[i-1].append(float(row[i]))
     print(x)
 
 def analyze_data():
