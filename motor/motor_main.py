@@ -268,7 +268,7 @@ class MotorController(object):
         for i in range(4, 7):
             temp_sum = 0
             temp_rms = 0
-            for j in range(c_start, c_finish + 1):
+            for j in range(c_start, c_finish):
                 #print(f"start time: {self.data[0][j-1]}, finish time: {self.data[0][j]}")
                 print(f"Length of data {i}: {len(self.data[i])}")
                 print(f"index being accessed: {j}")
