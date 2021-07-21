@@ -405,7 +405,7 @@ def run_motor(MC):
 
 
         temp_data[0] = temp_rms_data[0] = int(round(get_elapsed_us(MC.INITIAL_US), 6) * 1000000)
-        Mc.data[0].append(temp_data[0])
+        MC.data[0].append(temp_data[0])
 
         for i in range(3, 6):
             temp_rms_data[i-2] = temp_data[i]
