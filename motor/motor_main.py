@@ -261,6 +261,7 @@ class MotorController(object):
         print("-----------------------------\n")
 
     def _calculate_rms(self, c_start, c_finish):
+        '''
         print(c_start)
         print(c_finish)
         #self.rms_data[0].append(self.data[0][c_finish])
@@ -277,6 +278,7 @@ class MotorController(object):
             temp_rms = round((math.sqrt(temp_rms))/1000, 3)
             #print(f"temp rms: {temp_rms}")
             self.csv_data.append(temp_rms)
+        '''
 
 
     def _read_registers(self):
@@ -526,6 +528,7 @@ def run_main():
             time.sleep(3)
             return -1
         MC_1.motor_results(resp1, msg1)
+        print(MC.data)
         time.sleep(2)
         #print('\033c')
         print("*****************************\n")
