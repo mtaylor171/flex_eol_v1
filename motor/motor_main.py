@@ -209,10 +209,11 @@ class MotorController(object):
         if(len(self.csv_data) > 0):
             for i in range(2,5):
                 self.rms_avg[i] += self.csv_data[i]
-                self.rms_counter += 1
+            self.rms_counter += 1
+
             if(temp_data[0] - self.rms_timestamp >= 500000):
                 for i in range(2,5):
-                    self.rms_avg[i] = self.rms_avg[i] / self.rms_counter
+                    self.rms_avg[i] = round(self.rms_avg[i] / self.rms_counter, 1)
                 self.rms_avg[0] = temp_data[0]
                 self.rms_avg[1] = self.csv_data[1]
                 writer = csv.writer(self.file)
