@@ -623,7 +623,7 @@ uint16_t getAnalogIn(uint8_t pin)
 	}
 	spiComs(AD5592_ADC_READ | (0x1 << pin));
 	spiComs(AD5592_NOP);
-	spiComs(AD5592_NOP);
+	//spiComs(AD5592_NOP);
 	
 	uint16_t result = ((spiIn[0] << 8) & 0x0F00) | (spiIn[1] & 0xFF);
 	/* Return result */
