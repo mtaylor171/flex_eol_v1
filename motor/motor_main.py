@@ -268,8 +268,8 @@ class MotorController(object):
             for j in range(c_start, c_finish):
                 temp_sum += (2 * ((self.data[i][j])**2) * (self.data[0][j] - self.data[0][j-1]))
             temp_rms = temp_sum/(self.data[0][c_finish] - self.data[0][c_start])
-            #self.rms_data[i].append(round((math.sqrt(temp_rms))/1000, 3))
-            self.csv_data.append(round((math.sqrt(temp_rms))/1000, 3))
+            temp_rms = round((math.sqrt(temp_rms))/1000, 3)
+            self.csv_data.append(temp_rms)
 
 
     def _read_registers(self):
