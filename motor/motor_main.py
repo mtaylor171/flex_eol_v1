@@ -279,7 +279,7 @@ class MotorController(object):
                 #print(f"temp sum: {temp_sum}")
             print(f"c finish: {c_finish}")
             print(f"c start: {c_start}")
-            temp_rms = temp_sum/(self.data[0][c_finish] - self.data[0][c_start])
+            temp_rms = temp_sum/(self.data[0][c_finish - 1] - self.data[0][c_start])
             #print(f"temp rms: {temp_rms}")
             temp_rms = round((math.sqrt(temp_rms))/1000, 3)
             #print(f"temp rms: {temp_rms}")
