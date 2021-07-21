@@ -293,11 +293,10 @@ class MotorController(object):
         for i in range(4, 7):
             temp_sum = np.int64(0)
             temp_rms = np.float64(0.0)
-            print(f'index: {self.data[0].index(self.timestamp_steady_state)}')
             for j in range(self.data[0].index(self.timestamp_steady_state), len(self.data[0])):
                 temp_sum += (2 * ((self.data[i][j])**2) * ((self.data[0][j] - self.data[0][j-1]) / 1000))
             temp_rms = temp_sum/((self.data[0][len(self.data[0]) - 1] - self.data[0][0]) / 1000)
-            self.rms_data_full.append(round((math.sqrt(temp_rms))/1000, 3))
+            self.rms_data_full.append(round((math.sqrt(temp_rms)), 3))
         return self.rms_data_full
 
     def _read_registers(self):
