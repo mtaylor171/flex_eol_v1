@@ -292,7 +292,7 @@ class MotorController(object):
             for j in range(c_start, c_finish+1):
                 temp_sum += (2 * ((self.data[i][j])**2) * ((self.data[0][j] - self.data[0][j-1]) / 1000))
             temp_rms = temp_sum/((self.data[0][c_finish] - self.data[0][c_start])/1000)
-            temp_rms = round((math.sqrt(temp_rms))/1000, 3)
+            temp_rms = round((math.sqrt(temp_rms)), 3)
             self.csv_data.append(temp_rms)
             self.rms_data_full[i-3].append(self.data[0][c_finish])
         
@@ -598,15 +598,7 @@ def run_main():
         #rms1, rms2 = calculate_rms.main(FILE_OUTPUT_NAME + " mode1_test", FILE_OUTPUT_NAME + " mode2_test")
         #print(f"Phase RMS for mode1 [A, B, C]: {rms1}")
         #print(f"Phase RMS for mode2 [A, B, C]: {rms2}")
-        
-        print("data lengths:")
-        for i in range(0, 9):
-            print(f"MC 1 length {i}: {len(MC_1.data[i])}")
-        for i in range(0, 9):
-            print(f"MC 2 length {i}: {len(MC_2.data[i])}")
-        MC_2.motor_results(resp2, msg2)
 
-        #print(MC_1.len_counter)
         
         #graph_freq(MC_1, MC_2)
         #graph_freq(MC_1, MC_2, MC_3, MC_4)
