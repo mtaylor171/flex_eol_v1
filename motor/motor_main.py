@@ -36,14 +36,14 @@ class MotorController(object):
     C_FUNCTIONS = CDLL(SO_FILE)
     
     def __init__(self, file, mode = GPIO.BOARD, freq = 25000, warnings = False):
-        GPIO.setwarnings(warnings)
-        GPIO.setmode(mode)
-        GPIO.setup(motor_pin, GPIO.OUT)
         self.pwm_pin = 19
         self.motor_pin = 15
         self.pi = pigpio.pi()
         self.INITIAL_US = get_us()
         self.file = file
+        GPIO.setwarnings(warnings)
+        GPIO.setmode(mode)
+        GPIO.setup(self.motor_pin, self.GPIO.OUT)
         
         ## Default values
         self.pwm_current = 19
