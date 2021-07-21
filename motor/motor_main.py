@@ -17,11 +17,6 @@ import pigpio
 import calculate_rms
 
 ACTIVE_CHANNELS = 8
-PWM_PIN = 19            # GPIO pin 19 for Motor PWM control
-MOTOR_EN_PIN = 15       # GPIO pin 15 for Motor enable
-
-data = [[],[],[],[],[],[],[],[],[]]
-data_single_revolution = [[],[],[],[]]
 
 kDt = 0.5
 kAlpha = 0.01
@@ -40,28 +35,35 @@ class MotorController(object):
     SO_FILE = os.path.dirname(os.path.realpath(__file__)) + "/motor_spi_lib.so"
     C_FUNCTIONS = CDLL(SO_FILE)
     
-    def __init__(self, pwm_pin, motor_pin, mode = GPIO.BOARD, freq = 25000, warnings = False):
+    def __init__(self, file, mode = GPIO.BOARD, freq = 25000, warnings = False):
         GPIO.setwarnings(warnings)
         GPIO.setmode(mode)
         GPIO.setup(motor_pin, GPIO.OUT)
-        self.pwm_pin = pwm_pin
-        self.motor_pin = motor_pin
+        self.pwm_pin = 19
+        self.motor_pin = 15
         self.pi = pigpio.pi()
         self.INITIAL_US = get_us()
+        self.file = file
         
         ## Default values
         self.pwm_current = 19
         self.position_hold_time = 0
         self.position_counter = 0
-        self.data = []
-        self.data_single_revolution = []
+        self.data = [[],[],[],[],[],[],[],[],[]]
         self.last_position = 0
         self.freq_count = [[],[]]
+        self.rms_data = [[],[],[],[]]
+        self.csv_data = []
         self.current_rev_time = 0
         self.last_rev_time = 0
         self.master_pos_counter = 0
         self.pwm_target = 0
         self.motor_duration = 0
+        self.last_current_index = 1
+
+        self.phaseA_rms_current_1sec = []
+        self.phaseB_rms_current_1sec = []
+        self.phaseC_rms_current_1sec = []
 
         self.kX1 = 0.0
         self.kV1 = 0.0
@@ -73,7 +75,7 @@ class MotorController(object):
     def initialize(self):
         print("\n*****************************\n")
         msg = ""
-        self.pi.hardware_PWM(19, 0, 0)
+        self.pi.hardware_PWM(self.pwm_pin, 0, 0)
 
         '''
         while(1):
@@ -140,7 +142,7 @@ class MotorController(object):
             self.pwm_current += 1
             print(self.pwm_current)
             #print("PWM: {}".format(self.pwm_current))
-        self.pi.hardware_PWM(19, 25000, self.pwm_current * 10000)
+        self.pi.hardware_PWM(self.pwm_pin, 25000, self.pwm_current * 10000)
 
     def bcm2835_init_spi(self):
         self.C_FUNCTIONS.AD5592_Init()
@@ -158,10 +160,10 @@ class MotorController(object):
     def analog_terminate(self):
         self.C_FUNCTIONS.getAnalogInAll_Terminate()
 
-    def health_check(self, data):
+    def health_check(self, temp_data):
         code = [0,0,0]
         for i in range(1,4): # Turning Hall sensor channel data into a 3-digit position code
-            if(data[i] > 1500): # Set a threshold of 1650mV for the hall pulse
+            if(temp_data[i] > 1500): # Set a threshold of 1650mV for the hall pulse
                 code[i-1] = 1
             else:
                 code[i-1] = 0
@@ -176,8 +178,9 @@ class MotorController(object):
                     self.current_rev_time = get_us()
                     freq = self._get_rpm(self.current_rev_time, self.last_rev_time)
                     self.running_filter(freq)
-                    reluctance = self._motor_reluctance(self.x[-1])
-                    #rms_val = self._revolution_rms()
+                    self.csv_data[0] = temp_data[0]
+                    self._calculate_rms(self.last_current_index, len(self.data[0]) - 1)
+                    self.last_current_index = len(self.data[0]) - 1
                     self.position_counter = 0
                     self.last_rev_time = self.current_rev_time
                     print('\033c')
@@ -198,6 +201,9 @@ class MotorController(object):
                 msg = "STALL DETECTED"
                 return 0, msg
 
+        writer = csv.writer(file)
+        writer.writerow(self.csv_data)
+
         return 1, "All Good!"
 
     def running_filter(self, data):
@@ -215,14 +221,14 @@ class MotorController(object):
 
     def rampdown(self):
         print("Starting rampdown...")
-        #self.pi.hardware_PWM(19, 0, 0)
+        #self.pi.hardware_PWM(self.pwm_pin, 0, 0)
         #return self.C_FUNCTIONS.motor_freewheel()
 
         for duty in range(self.pwm_current, 0, -1):
-            self.pi.hardware_PWM(19, 25000, duty * 10000)
+            self.pi.hardware_PWM(self.pwm_pin, 25000, duty * 10000)
             print("PWM: {}".format(duty))
             time.sleep(0.2)
-        self.pi.hardware_PWM(19, 0, 0)
+        self.pi.hardware_PWM(self.pwm_pin, 0, 0)
         #GPIO.output(self.motor_pin, 0)
         # graph_data()
         #return 0
@@ -231,13 +237,13 @@ class MotorController(object):
     # This occurs when there is a danger event like a stall or overcurrent
     # In this case, we want to shut off everything immediately to prevent further damage
         print("Starting Shutdown")
-        self.pi.hardware_PWM(19, 0, 0)
+        self.pi.hardware_PWM(self.pwm_pin, 0, 0)
         GPIO.output(self.motor_pin, 0)
         # graph_data()
         #return 0
 
     def killall(self):
-        self.pi.hardware_PWM(19, 0, 0)
+        self.pi.hardware_PWM(self.pwm_pin, 0, 0)
         GPIO.output(self.motor_pin, 0)
         #self.pi.close()
 
@@ -251,6 +257,18 @@ class MotorController(object):
             print("MOTOR PASSED\n")
         print("\n\n-----------------------------\n")
         print("-----------------------------\n")
+
+    def _calculate_rms(self, c_start, c_finish):
+        self.rms_data[0].append(self.data[0][c_finish])
+        for i in range(3, 6):
+            temp_sum = 0
+            temp_rms = 0
+            for j in range(c_start, c_finish):
+                temp_sum += (2 * ((self.data[i][j])**2) * (self.data[0][j] - self.data[0][j-1]))
+            temp_rms = temp_sum/(self.data[0][c_finish] - self.data[0][c_start])
+            self.rms_data[i].append(round((math.sqrt(temp_rms))/1000, 3))
+            self.csv_data[i-2] = round((math.sqrt(temp_rms))/1000, 3)
+
 
     def _read_registers(self):
     # Reads all registers on DRV8343 and prints them
@@ -320,7 +338,7 @@ def start_sequence():
     print(f"NURO MOTOR TESTING - {datetime.datetime.now().replace(microsecond=0)}")
     print("*****************************\n")
 
-    MC_start = MotorController(PWM_PIN, MOTOR_EN_PIN)
+    MC_start = MotorController()
 
     MC_start.bcm2835_init_spi()
 
@@ -359,6 +377,7 @@ def end_sequence(MC):
 
 def run_motor(MC, file):
     temp_data = np.uint32([0,0,0,0,0,0,0,0,0])
+    temp_rms_data = np.uint32([0,0,0,0])
     adc_reading = 0x0
     index = 0x0
     pwm_counter = 0
@@ -382,12 +401,19 @@ def run_motor(MC, file):
             data_16bit = MC.get_analog_data() 
             adc_reading, index = data_process(data_16bit)
             temp_data[index+1] = adc_reading
-            data[index+1].append(temp_data[index+1])
+            MC.data[index+1].append(temp_data[index+1])
 
-        temp_data[0] = int(round(get_elapsed_us(MC.INITIAL_US), 6) * 1000000)
-        data[0].append(temp_data[0])
-        writer = csv.writer(file)
-        writer.writerow(temp_data)
+
+        temp_data[0] = temp_rms_data[0] = int(round(get_elapsed_us(MC.INITIAL_US), 6) * 1000000)
+        Mc.data[0].append(temp_data[0])
+
+        for i in range(3, 6):
+            temp_rms_data[i-2] = temp_data[i]
+
+        MC.rms_data.append(temp_rms_data)
+
+        #writer = csv.writer(file)
+        #writer.writerow(temp_data)
 
         try:
             resp, msg = MC.health_check(temp_data)
@@ -416,17 +442,17 @@ def run_motor(MC, file):
 
 def data_process(data):
     index = ((data >> 12) & 0x7)
-    data_converted = int(data & 0xFFF) * (5000/4095)
+    data_converted = int(data & 0xFFF)
     if index in range(0,3): # Channels 0-2 are hall sensors - use voltage translation
-        adc_reading = data_converted
+        adc_reading = data_converted * (5000/4095)
     elif index in range(3,6): # Channes 3-5 are current sensors - use current translation
         #adc_reading = (3000 - data_converted)
         if data_converted >= 3000:
             adc_reading = 0
         else:
-            adc_reading = (10 * (3000 - data_converted))
-    elif index in range(6,9):
-        adc_reading = data_converted
+            adc_reading = (10 * (3000 - (data_converted * (5000/4095))))
+    elif index in range(6,8):
+        adc_reading = ((data_converted - 409.5) * 0.7535795) + 25
         #adc_reading = int(((data_converted - 409.5) * 0.7535795) + 25)
     return adc_reading, index
     #return data_converted, index
@@ -447,14 +473,14 @@ def run_main():
     FILE_OUTPUT_NAME = str(datetime.datetime.now().replace(microsecond=0))
     file1 = open("/home/pi/Documents/MOTOR_DATA_FOLDER/" + FILE_OUTPUT_NAME + " mode1_test", 'w', newline='')
 
-    MC_1 = MotorController(PWM_PIN, MOTOR_EN_PIN)
+    MC_1 = MotorController(file1)
     
     resp, msg = MC_1.initialize()
     if not resp:
     	end_sequence(MC_1)
     	print(msg)
     	return -1
-    MC_2 = MotorController(PWM_PIN, MOTOR_EN_PIN)
+    MC_2 = MotorController(file2)
     
     #print('\033c')
     #print("*****************************")
@@ -477,7 +503,7 @@ def run_main():
         print("*****************************")
         print("----Testing Mode 1----")
 
-        resp1, msg1 = run_motor(MC_1, file1)
+        resp1, msg1 = run_motor(MC_1)
         print(msg1)
         #end_sequence(MC_1)
         if resp1 < 0:
@@ -496,7 +522,7 @@ def run_main():
         print("----Testing Mode 2----")
         
         file2 = open("/home/pi/Documents/MOTOR_DATA_FOLDER/" + FILE_OUTPUT_NAME + " mode2_test", 'w', newline='')
-        resp2, msg2 = run_motor(MC_2, file2)
+        resp2, msg2 = run_motor(MC_2)
         print(msg2)
         #end_sequence(MC_2)
         if resp2 < 0:
@@ -553,7 +579,7 @@ def run_main():
         
         MC_2.motor_results(resp2, msg2)
         
-        graph_freq(MC_1, MC_2)
+        #graph_freq(MC_1, MC_2)
         #graph_freq(MC_1, MC_2, MC_3, MC_4)
 
         #print('\033c')
