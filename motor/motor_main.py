@@ -423,7 +423,7 @@ def run_motor(MC):
         if(MC.pwm_current < MC.pwm_target):                              # Ramps up PWM
             if( (pwm_counter == 0) or ((pwm_counter % 1000) == 0) ):
                 MC.pwm_control()
-                if(len(data[0]) > 1):
+                if(len(MC.data[0]) > 1):
                     MC.timestamp_steady_state = MC.data[0][-1]
             pwm_counter += 1
 
