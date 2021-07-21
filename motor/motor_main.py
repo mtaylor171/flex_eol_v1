@@ -207,7 +207,7 @@ class MotorController(object):
             if get_elapsed_us(self.position_hold_time) > 1:
                 msg = "STALL DETECTED"
                 return 0, msg
-
+        print(self.last_current_index)
         if(temp_data[0] - self.data[0][self.last_current_index] >= 200000):
             self._calculate_rms(self.last_current_index, (len(self.data[0]) - 1))
             self.last_current_index = (len(self.data[0]) - 1)
