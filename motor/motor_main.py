@@ -53,7 +53,7 @@ class MotorController(object):
         self.data = [[],[],[],[],[],[],[],[],[]]
         self.last_position = 0
         self.freq_count = [[],[]]
-        self.rms_data_full = [[],[],[],[]]
+        self.rms_data_full = []
         self.csv_data = []
         self.current_rev_time = 0
         self.last_rev_time = 0
@@ -65,6 +65,7 @@ class MotorController(object):
         self.rms_avg = [0,0,0,0,0]
         self.rms_counter = 0
         self.freq = 0
+        self.timestamp_steady_state = 0
 
         self.phaseA_rms_current_1sec = []
         self.phaseB_rms_current_1sec = []
@@ -277,7 +278,6 @@ class MotorController(object):
 
     def _calculate_rms(self, c_start, c_finish):
         self.csv_data.append(self.data[0][c_finish])
-        self.rms_data_full[0].append(self.data[0][c_finish])
         for i in range(4, 7):
             temp_sum = np.int64(0)
             temp_rms = np.float64(0.0)
@@ -287,9 +287,17 @@ class MotorController(object):
             temp_rms = temp_sum/((self.data[0][c_finish] - self.data[0][c_start]))
             temp_rms = round((math.sqrt(temp_rms)), 3)
             self.csv_data.append(temp_rms)
-            self.rms_data_full[i-3].append(self.data[0][c_finish])
         
+    def _calculate_rms_full(self):
 
+        for i in range(0, 3):
+            temp_sum = 0
+            temp_rms = 0
+            for j in range(data[0].index(self.timestamp_steady_state), len(self.data[0]) - 1):
+                temp_sum += (2 * ((self.data[i][j])**2) * (self.data[0][j] - self.data[0][j-1]))
+            temp_rms = temp_sum/(self.data[0][len(self.data[0]) - 1] - self.data[0][0])
+            self.rms_data_full.append(round((math.sqrt(temp_rms))/1000, 3))
+        return self.rms_data_full
 
     def _read_registers(self):
     # Reads all registers on DRV8343 and prints them
@@ -415,6 +423,8 @@ def run_motor(MC):
         if(MC.pwm_current < MC.pwm_target):                              # Ramps up PWM
             if( (pwm_counter == 0) or ((pwm_counter % 1000) == 0) ):
                 MC.pwm_control()
+                if(len(data[0]) > 1):
+                    MC.timestamp_steady_state = MC.data[0][-1]
             pwm_counter += 1
 
         for i in range(0, ACTIVE_CHANNELS):
@@ -588,9 +598,10 @@ def run_main():
             return -1
         '''
         
-        #rms1, rms2 = calculate_rms.main(FILE_OUTPUT_NAME + " mode1_test", FILE_OUTPUT_NAME + " mode2_test")
-        #print(f"Phase RMS for mode1 [A, B, C]: {rms1}")
-        #print(f"Phase RMS for mode2 [A, B, C]: {rms2}")
+        rms1 = MC_1._calculate_rms_full()
+        rms2 = MC_2._calculate_rms_full()
+        print(f"Phase RMS for mode1 [A, B, C]: {rms1}")
+        print(f"Phase RMS for mode2 [A, B, C]: {rms2}")
 
         
         #graph_freq(MC_1, MC_2)
