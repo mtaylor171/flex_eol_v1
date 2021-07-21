@@ -543,6 +543,10 @@ def run_main():
                 pass
             print('\033c')
             print("\nRestarting test program...")
+                if(os.path.exists("/home/pi/Documents/MOTOR_DATA_FOLDER/" + FILE_OUTPUT_NAME + " mode1_fulldata")):
+                    os.remove("/home/pi/Documents/MOTOR_DATA_FOLDER/" + FILE_OUTPUT_NAME + " mode1_fulldata")
+                if(os.path.exists("/home/pi/Documents/MOTOR_DATA_FOLDER/" + FILE_OUTPUT_NAME + " mode2_fulldata")):
+                    os.remove("/home/pi/Documents/MOTOR_DATA_FOLDER/" + FILE_OUTPUT_NAME + " mode2_fulldata")
             time.sleep(3)
             return -1
         MC_1.motor_results(resp1, msg1)
@@ -562,6 +566,10 @@ def run_main():
                 pass
             print('\033c')
             print("Restarting test program...")
+                if(os.path.exists("/home/pi/Documents/MOTOR_DATA_FOLDER/" + FILE_OUTPUT_NAME + " mode1_fulldata")):
+                    os.remove("/home/pi/Documents/MOTOR_DATA_FOLDER/" + FILE_OUTPUT_NAME + " mode1_fulldata")
+                if(os.path.exists("/home/pi/Documents/MOTOR_DATA_FOLDER/" + FILE_OUTPUT_NAME + " mode2_fulldata")):
+                    os.remove("/home/pi/Documents/MOTOR_DATA_FOLDER/" + FILE_OUTPUT_NAME + " mode2_fulldata")
             time.sleep(3)
             return -1
         #time.sleep(5)
@@ -613,6 +621,10 @@ def run_main():
         print("Please disconnect motor!\n")
         while( message_display("Press 'c' and ENTER to continue to next motor, or CTRL + 'C' to exit program: ", 'c') != 1):
             pass
+        if(os.path.exists("/home/pi/Documents/MOTOR_DATA_FOLDER/" + FILE_OUTPUT_NAME + " mode1_fulldata")):
+            os.remove("/home/pi/Documents/MOTOR_DATA_FOLDER/" + FILE_OUTPUT_NAME + " mode1_fulldata")
+        if(os.path.exists("/home/pi/Documents/MOTOR_DATA_FOLDER/" + FILE_OUTPUT_NAME + " mode2_fulldata")):
+            os.remove("/home/pi/Documents/MOTOR_DATA_FOLDER/" + FILE_OUTPUT_NAME + " mode2_fulldata")
         time.sleep(1)
         return 1
     except KeyboardInterrupt:
