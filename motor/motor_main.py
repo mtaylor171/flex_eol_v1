@@ -208,11 +208,11 @@ class MotorController(object):
                 msg = "STALL DETECTED"
                 return 0, msg
 
-        if(temp_data[0] - self.data[0][self.last_current_index - 1] >= 50000):
+        if(temp_data[0] - self.data[0][self.last_current_index - 1] >= 500000):
             self._calculate_rms(self.last_current_index - 1, (len(self.data[0]) - 1))
             self.last_current_index = (len(self.data[0]))
             self.csv_data.insert(1, round(self.freq, 1))
-            print('\033c')
+            #print('\033c')
             print("Time: {} ".format(round(get_elapsed_us(self.INITIAL_US), 1)) + "PWM: {} ".format(self.pwm_current) + "RPM: {} ".format(round(self.freq, 1)) + "Current: {}".format(self.csv_data[2:]))
 
             writer = csv.writer(self.file)
@@ -473,7 +473,7 @@ def data_process(data):
         if data_converted >= 3000:
             adc_reading = 0
         else:
-            adc_reading = (10 * (3000 - data_converted))
+            adc_reading = round((10 * (3000 - data_converted)) / 1000, 2)
     elif index in range(6,8):
         adc_reading = ((data_converted - 409.5) * 0.7535795) + 25
         #adc_reading = int(((data_converted - 409.5) * 0.7535795) + 25)
