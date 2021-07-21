@@ -601,7 +601,7 @@ def run_main():
             return -1
         '''
         print("\nCalculating total RMS values. This may take up to a minute...\n")
-        rms1 = calculate_rms.main(FILE_OUTPUT_NAME + " mode1_fulldata", FILE_OUTPUT_NAME + " mode2_fulldata", MC_1.data[0].index(MC_1.timestamp_steady_state), MC_2.data[0].index(MC_2.timestamp_steady_state))
+        rms1, rms2 = calculate_rms.main(FILE_OUTPUT_NAME + " mode1_fulldata", FILE_OUTPUT_NAME + " mode2_fulldata", MC_1.data[0].index(MC_1.timestamp_steady_state), MC_2.data[0].index(MC_2.timestamp_steady_state))
         print(f"Phase RMS for mode1 [A, B, C]: {rms1}")
         print(f"Phase RMS for mode2 [A, B, C]: {rms2}")
 
