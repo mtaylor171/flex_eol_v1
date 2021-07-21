@@ -290,8 +290,8 @@ class MotorController(object):
             temp_sum = 0
             temp_rms = 0
             for j in range(c_start, c_finish+1):
-                temp_sum += (2 * ((self.data[i][j])**2) * ((self.data[0][j] - self.data[0][j-1]) / 1000))
-            temp_rms = temp_sum/((self.data[0][c_finish] - self.data[0][c_start])/1000)
+                temp_sum += (2 * ((self.data[i][j])**2) * ((self.data[0][j] - self.data[0][j-1])))
+            temp_rms = temp_sum/((self.data[0][c_finish] - self.data[0][c_start]))
             temp_rms = round((math.sqrt(temp_rms)), 3)
             self.csv_data.append(temp_rms)
             self.rms_data_full[i-3].append(self.data[0][c_finish])
