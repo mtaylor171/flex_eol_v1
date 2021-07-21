@@ -208,9 +208,9 @@ class MotorController(object):
                 msg = "STALL DETECTED"
                 return 0, msg
         print(self.last_current_index)
-        if(temp_data[0] - self.data[0][self.last_current_index] >= 200000):
-            self._calculate_rms(self.last_current_index, (len(self.data[0]) - 1))
-            self.last_current_index = (len(self.data[0]) - 1)
+        if(temp_data[0] - self.data[0][self.last_current_index - 1] >= 200000):
+            self._calculate_rms(self.last_current_index - 1, (len(self.data[0]) - 1))
+            self.last_current_index = (len(self.data[0]))
             self.csv_data.insert(1, round(freq, 1))
 
             print("Time: {} ".format(round(get_elapsed_us(self.INITIAL_US), 1)) + "PWM: {} ".format(self.pwm_current) + "RPM: {} ".format(round(freq, 1)) + "Current: {}".format(self.csv_data[2:]))
