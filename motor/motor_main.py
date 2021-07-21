@@ -596,7 +596,7 @@ def run_main():
         print("data lengths:")
         for i in range(0, 9):
             print(f"MC 1 length {i}: {len(MC_1.data[i])}")
-            print(f"MC 2 length {i}: {len(MC_1.data[i])}")
+            print(f"MC 2 length {i}: {len(MC_2.data[i])}")
 
         MC_2.motor_results(resp2, msg2)
         
