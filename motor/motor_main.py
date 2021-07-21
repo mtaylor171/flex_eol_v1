@@ -183,6 +183,9 @@ class MotorController(object):
                     self.csv_data.append(temp_data[0])
                     self._calculate_rms(self.last_current_index, (len(self.data[0]) - 1))
                     self.last_current_index = (len(self.data[0]) - 1)
+                    print(self.csv_data)
+                    writer = csv.writer(self.file)
+                    writer.writerow(self.csv_data)
                     self.position_counter = 0
                     self.last_rev_time = self.current_rev_time
                     print('\033c')
@@ -202,9 +205,6 @@ class MotorController(object):
             if get_elapsed_us(self.position_hold_time) > 1:
                 msg = "STALL DETECTED"
                 return 0, msg
-        print(self.csv_data)
-        writer = csv.writer(self.file)
-        writer.writerow(self.csv_data)
 
         return 1, "All Good!"
 
