@@ -271,7 +271,7 @@ class MotorController(object):
             temp_rms = temp_sum/(self.data[0][c_finish] - self.data[0][c_start])
             temp_rms = round((math.sqrt(temp_rms))/1000, 3)
             self.csv_data.append(temp_rms)
-            self.rms_data_full[i].append(self.data[0][c_finish])
+            self.rms_data_full[i-3].append(self.data[0][c_finish])
         
 
 
