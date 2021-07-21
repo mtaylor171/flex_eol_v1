@@ -216,7 +216,7 @@ class MotorController(object):
             print("Time: {} ".format(round(get_elapsed_us(self.INITIAL_US), 1)) + "PWM: {} ".format(self.pwm_current) + "RPM: {} ".format(round(self.freq, 1)) + "Current: {}".format(self.csv_data[2:]))
 
             writer = csv.writer(self.file)
-            writer.writerow(self.rms_avg)
+            writer.writerow(self.csv_data)
             '''
             for i in range(2,5):
 
