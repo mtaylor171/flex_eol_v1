@@ -205,19 +205,20 @@ class MotorController(object):
             if get_elapsed_us(self.position_hold_time) > 1:
                 msg = "STALL DETECTED"
                 return 0, msg
-        for i in range(2,5):
-            self.rms_avg[i] += self.csv_data[i]
-            self.rms_counter += 1
-        if(temp_data[0] - self.rms_timestamp >= 500000):
+        if(len(csv_data) > 0):
             for i in range(2,5):
-                self.rms_avg[i] = self.rms_avg[i] / self.rms_counter
-            self.rms_avg[0] = temp_data[0]
-            self.rms_avg[1] = csv_data[1]
-            writer = csv.writer(self.file)
-            writer.writerow(self.rms_avg)
-            self.rms_timestamp = temp_data[0]
-            self.rms_counter = 0
-            self.rms_avg = [0,0,0,0,0]
+                self.rms_avg[i] += self.csv_data[i]
+                self.rms_counter += 1
+            if(temp_data[0] - self.rms_timestamp >= 500000):
+                for i in range(2,5):
+                    self.rms_avg[i] = self.rms_avg[i] / self.rms_counter
+                self.rms_avg[0] = temp_data[0]
+                self.rms_avg[1] = csv_data[1]
+                writer = csv.writer(self.file)
+                writer.writerow(self.rms_avg)
+                self.rms_timestamp = temp_data[0]
+                self.rms_counter = 0
+                self.rms_avg = [0,0,0,0,0]
 
         return 1, "All Good!"
 
