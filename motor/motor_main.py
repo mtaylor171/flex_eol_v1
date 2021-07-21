@@ -61,6 +61,7 @@ class MotorController(object):
         self.pwm_target = 0
         self.motor_duration = 0
         self.last_current_index = 1
+        self.len_counter = []
 
         self.phaseA_rms_current_1sec = []
         self.phaseB_rms_current_1sec = []
@@ -418,6 +419,7 @@ def run_motor(MC):
             data_16bit = MC.get_analog_data() 
             adc_reading, index = data_process(data_16bit)
             temp_data[index+1] = adc_reading
+            MC.len_counter.append(len(temp_data))
             MC.data[index+1].append(temp_data[index+1])
 
 
@@ -599,6 +601,8 @@ def run_main():
         for i in range(0, 9):
             print(f"MC 2 length {i}: {len(MC_2.data[i])}")
         MC_2.motor_results(resp2, msg2)
+
+        print(MC_1.len_counter)
         
         #graph_freq(MC_1, MC_2)
         #graph_freq(MC_1, MC_2, MC_3, MC_4)
