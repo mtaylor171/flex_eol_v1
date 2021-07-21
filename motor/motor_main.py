@@ -186,7 +186,7 @@ class MotorController(object):
                     #self.running_filter(freq)
                     self._calculate_rms(self.last_current_index, (len(self.data[0]) - 1))
                     self.last_current_index = (len(self.data[0]) - 1)
-                    self.csv_data.insert(1, round(freq, 1))
+                    self.csv_data.insert(1, round(self.freq, 1))
 
                     self.position_counter = 0
                     self.last_rev_time = self.current_rev_time
