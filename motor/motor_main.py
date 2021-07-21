@@ -181,7 +181,6 @@ class MotorController(object):
                     self.current_rev_time = get_us()
                     freq = self._get_rpm(self.current_rev_time, self.last_rev_time)
                     self.running_filter(freq)
-                    self.csv_data.append(temp_data[0])
                     self._calculate_rms(self.last_current_index, (len(self.data[0]) - 1))
                     self.last_current_index = (len(self.data[0]) - 1)
                     print(self.csv_data)
@@ -189,8 +188,8 @@ class MotorController(object):
                     writer.writerow(self.csv_data)
                     self.position_counter = 0
                     self.last_rev_time = self.current_rev_time
-                    #print('\033c')
-                    #print("Time: {} ".format(round(get_elapsed_us(self.INITIAL_US), 1)) + "PWM: {} ".format(self.pwm_current) + "RPM: {} ".format(round(freq, 1)))
+                    print('\033c')
+                    print("Time: {} ".format(round(get_elapsed_us(self.INITIAL_US), 1)) + "PWM: {} ".format(self.pwm_current) + "RPM: {} ".format(round(freq, 1)) + "Current: {}".format(csv_data[1:]))
                     #print('\033c')
                     #print("RPM: {} ".format(freq))
                 else:
@@ -262,29 +261,14 @@ class MotorController(object):
         print("-----------------------------\n")
 
     def _calculate_rms(self, c_start, c_finish):
-        
-        #print(c_start)
-        #print(c_finish)
-        #self.rms_data[0].append(self.data[0][c_finish])
         self.csv_data.append(self.data[0][c_finish])
         for i in range(4, 7):
             temp_sum = 0
             temp_rms = 0
             for j in range(c_start, c_finish+1):
-                #print(f"start time: {self.data[0][j-1]}, finish time: {self.data[0][j]}")
-                print(f"Length of data {i}: {len(self.data[i])}")
-                print(f"index being accessed: {j}")
-                print(f"Length of data 0: {len(self.data[0])}")
-                print(f"index being accessed: {j}")
-                #print(f"data: {self.data[i][j-1]}")
                 temp_sum += (2 * ((self.data[i][j])**2) * (self.data[0][j] - self.data[0][j-1]))
-                #print(f"temp sum: {temp_sum}")
-            print(f"c finish: {c_finish}")
-            print(f"c start: {c_start}")
             temp_rms = temp_sum/(self.data[0][c_finish] - self.data[0][c_start])
-            #print(f"temp rms: {temp_rms}")
             temp_rms = round((math.sqrt(temp_rms))/1000, 3)
-            #print(f"temp rms: {temp_rms}")
             self.csv_data.append(temp_rms)
         
 
