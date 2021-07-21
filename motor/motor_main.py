@@ -208,7 +208,7 @@ class MotorController(object):
                 msg = "STALL DETECTED"
                 return 0, msg
 
-        if(temp_data[0] - self.data[0][self.last_current_index - 1] >= 1000000):
+        if(temp_data[0] - self.data[0][self.last_current_index - 1] >= 5000000):
             self._calculate_rms(self.last_current_index - 1, (len(self.data[0]) - 1))
             self.last_current_index = (len(self.data[0]))
             self.csv_data.insert(1, round(self.freq, 1))
