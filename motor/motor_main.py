@@ -60,7 +60,7 @@ class MotorController(object):
         self.master_pos_counter = 0
         self.pwm_target = 0
         self.motor_duration = 0
-        self.last_current_index = 1
+        self.last_current_index = 0
         self.rms_timestamp = 0
         self.rms_avg = [0,0,0,0,0]
         self.rms_counter = 0
@@ -185,12 +185,12 @@ class MotorController(object):
                     self.freq = self._get_rpm(self.current_rev_time, self.last_rev_time)
                     self.last_rev_time = self.current_rev_time
                     #self.running_filter(freq)
-                if(self.position_counter == 90):
-                    self._calculate_rms(self.last_current_index, (len(self.data[0]) - 1))
-                    self.last_current_index = (len(self.data[0]) - 1)
-                    self.csv_data.insert(1, round(self.freq, 1))
-                    writer = csv.writer(self.file)
-                    writer.writerow(self.csv_data)
+                #if(self.position_counter == 270):
+                    #self._calculate_rms(self.last_current_index, (len(self.data[0]) - 1))
+                    #self.last_current_index = (len(self.data[0]) - 1)
+                    #self.csv_data.insert(1, round(self.freq, 1))
+                    #writer = csv.writer(self.file)
+                    #writer.writerow(self.csv_data)
                     self.position_counter = 0
                     #print('\033c')
                     print("Time: {} ".format(round(get_elapsed_us(self.INITIAL_US), 1)) + "PWM: {} ".format(self.pwm_current) + "RPM: {} ".format(round(self.freq, 1)) + "Current: {}".format(self.csv_data[2:]))
@@ -209,8 +209,8 @@ class MotorController(object):
             if get_elapsed_us(self.position_hold_time) > 1:
                 msg = "STALL DETECTED"
                 return 0, msg
-        '''
-        if(temp_data[0] - self.data[0][self.last_current_index - 1] >= 0.05):
+        
+        if(temp_data[0] - self.data[0][self.last_current_index - 1] >= 500000):
             self._calculate_rms(self.last_current_index - 1, (len(self.data[0]) - 1))
             self.last_current_index = (len(self.data[0]))
             self.csv_data.insert(1, round(self.freq, 1))
@@ -219,18 +219,8 @@ class MotorController(object):
 
             writer = csv.writer(self.file)
             writer.writerow(self.csv_data)
-            
-            for i in range(2,5):
 
-                self.rms_avg[i] = round(self.rms_avg[i] / self.rms_counter, 1)
-            self.rms_avg[0] = temp_data[0]
-            self.rms_avg[1] = self.csv_data[1]
-            writer = csv.writer(self.file)
-            writer.writerow(self.rms_avg)
-            self.rms_timestamp = temp_data[0]
-            self.rms_counter = 0
-            self.rms_avg = [0,0,0,0,0]
-            '''
+            
         return 1, "All Good!"
 
     def running_filter(self, data):
@@ -289,8 +279,8 @@ class MotorController(object):
         self.csv_data.append(self.data[0][c_finish])
         self.rms_data_full[0].append(self.data[0][c_finish])
         for i in range(4, 7):
-            temp_sum = 0
-            temp_rms = 0
+            temp_sum = np.int64(0)
+            temp_rms = np.float64(0.0)
             for j in range(c_start, c_finish+1):
                 temp_sum += (2 * ((self.data[i][j])**2) * ((self.data[0][j] - self.data[0][j-1])))
                 #print(temp_sum)
