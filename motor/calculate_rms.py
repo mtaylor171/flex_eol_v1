@@ -5,8 +5,9 @@ import math
 
 class RMS_calc(object):
 
-    def __init__(self, filename):
+    def __init__(self, filename, file_start):
         self.filename = filename
+        self.file_start = file_start
         self.rms = []
         self.x = []
         self.y = [[],[],[]]
@@ -25,15 +26,15 @@ class RMS_calc(object):
         for i in range(0, 3):
             temp_sum = 0
             temp_rms = 0
-            for j in range(1,len(self.y[0])):
+            for j in range(self.file_start,len(self.y[0])):
                 temp_sum += (2 * ((self.y[i][j])**2) * (self.x[j] - self.x[j-1]))
-            temp_rms = temp_sum/(self.x[len(self.y[0]) - 1] - self.x[0])
+            temp_rms = temp_sum/(self.x[len(self.y[0]) - 1] - self.x[file_start])
             self.rms.append(round((math.sqrt(temp_rms))/1000, 3))
         return self.rms
 
-def main(filename_1, filename_2):
-    rms1 = RMS_calc(filename_1)
-    rms2 = RMS_calc(filename_2)
+def main(filename_1, filename_2, file1_start, file2_start):
+    rms1 = RMS_calc(filename_1, file1_start)
+    rms2 = RMS_calc(filename_2, file2_start)
 
     rms1.collect_data()
     rms2.collect_data()
