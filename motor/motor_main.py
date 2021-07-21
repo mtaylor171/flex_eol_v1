@@ -180,16 +180,18 @@ class MotorController(object):
             if(self.last_position != 0):
                 self.master_pos_counter += 1
                 self.position_counter += 1 
-                if(self.position_counter == 30):
+                if((self.position_counter % 30) == 0):
                     self.current_rev_time = get_us()
                     self.freq = self._get_rpm(self.current_rev_time, self.last_rev_time)
+                    self.last_rev_time = self.current_rev_time
                     #self.running_filter(freq)
+                if(self.position_counter == 90):
                     self._calculate_rms(self.last_current_index, (len(self.data[0]) - 1))
                     self.last_current_index = (len(self.data[0]) - 1)
                     self.csv_data.insert(1, round(self.freq, 1))
-
+                    writer = csv.writer(self.file)
+                    writer.writerow(self.csv_data)
                     self.position_counter = 0
-                    self.last_rev_time = self.current_rev_time
                     #print('\033c')
                     print("Time: {} ".format(round(get_elapsed_us(self.INITIAL_US), 1)) + "PWM: {} ".format(self.pwm_current) + "RPM: {} ".format(round(self.freq, 1)) + "Current: {}".format(self.csv_data[2:]))
                     #print('\033c')
