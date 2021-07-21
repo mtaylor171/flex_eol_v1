@@ -15,6 +15,7 @@ import RPi.GPIO as GPIO
 import os
 import pigpio
 import calculate_rms
+import math
 
 ACTIVE_CHANNELS = 8
 
@@ -573,7 +574,7 @@ def run_main():
             return -1
         '''
         
-        rms1, rms2 = calculate_rms.main(FILE_OUTPUT_NAME + " mode1_test", FILE_OUTPUT_NAME + " mode2_test")
+        #rms1, rms2 = calculate_rms.main(FILE_OUTPUT_NAME + " mode1_test", FILE_OUTPUT_NAME + " mode2_test")
 
         print(f"Phase RMS for mode1 [A, B, C]: {rms1}")
         print(f"Phase RMS for mode2 [A, B, C]: {rms2}")
