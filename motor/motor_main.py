@@ -375,7 +375,7 @@ def start_sequence():
 def end_sequence(MC):
     MC.killall()
 
-def run_motor(MC, file):
+def run_motor(MC):
     temp_data = np.uint32([0,0,0,0,0,0,0,0,0])
     temp_rms_data = np.uint32([0,0,0,0])
     adc_reading = 0x0
