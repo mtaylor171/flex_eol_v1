@@ -445,7 +445,7 @@ def run_motor(MC):
                 MC.analog_terminate()
                 MC.shutdown()
                 return -1, msg
-            if(temp_data[0] >= MC.motor_duration):
+            if(temp_data[0] >= MC.motor_duration * 1000000):
                 MC.analog_terminate()
                 #print(hex(MC.rampdown()))
                 #time.sleep(10)
