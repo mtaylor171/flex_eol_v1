@@ -282,7 +282,7 @@ class MotorController(object):
             temp_sum = np.int64(0)
             temp_rms = np.float64(0.0)
             for j in range(c_start, c_finish+1):
-                temp_sum += (2 * ((self.data[i][j])**2) * ((self.data[0][j] - self.data[0][j-1])))
+                temp_sum += (2 * (((self.data[i][j])/1000)**2) * ((self.data[0][j] - self.data[0][j-1])))
                 #print(temp_sum)
             temp_rms = temp_sum/((self.data[0][c_finish] - self.data[0][c_start]))
             temp_rms = round((math.sqrt(temp_rms)), 3)
@@ -476,7 +476,7 @@ def data_process(data):
         if data_converted >= 3000:
             adc_reading = 0
         else:
-            adc_reading = round((10 * (3000 - data_converted)) / 1000, 2)
+            adc_reading = round((10 * (3000 - data_converted)), 2)
     elif index in range(6,8):
         adc_reading = ((data_converted - 409.5) * 0.7535795) + 25
         #adc_reading = int(((data_converted - 409.5) * 0.7535795) + 25)
@@ -601,7 +601,7 @@ def run_main():
             return -1
         '''
         print("\nCalculating total RMS values. This may take up to a minute...\n")
-        rms1 = calculate_rms.main("/home/pi/Documents/MOTOR_DATA_FOLDER/" + FILE_OUTPUT_NAME + " mode1_fulldata", "/home/pi/Documents/MOTOR_DATA_FOLDER/" + FILE_OUTPUT_NAME + " mode2_fulldata", MC_1.data[0].index(MC_1.timestamp_steady_state), MC_2.data[0].index(MC_2.timestamp_steady_state))
+        rms1 = calculate_rms.main(FILE_OUTPUT_NAME + " mode1_fulldata", FILE_OUTPUT_NAME + " mode2_fulldata", MC_1.data[0].index(MC_1.timestamp_steady_state), MC_2.data[0].index(MC_2.timestamp_steady_state))
         print(f"Phase RMS for mode1 [A, B, C]: {rms1}")
         print(f"Phase RMS for mode2 [A, B, C]: {rms2}")
 
