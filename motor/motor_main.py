@@ -436,7 +436,7 @@ def run_motor(MC):
         temp_data[0] = int(round(get_elapsed_us(MC.INITIAL_US), 6))
         MC.data[0].append(temp_data[0])
 
-        writer = csv.writer(self.file)
+        writer = csv.writer(MC.file)
         writer.writerow(temp_data)
 
         try:
