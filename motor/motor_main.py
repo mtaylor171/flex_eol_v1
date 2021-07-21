@@ -269,6 +269,7 @@ class MotorController(object):
             temp_rms = 0
             for j in range(c_start, c_finish):
                 print(f"start time: {self.data[0][j-1]}, finish time: {self.data[0][j]}")
+                print(f"data: {self.data[i][j]}")
                 temp_sum += (2 * ((self.data[i][j])**2) * (self.data[0][j] - self.data[0][j-1]))
                 #print(f"temp sum: {temp_sum}")
             temp_rms = temp_sum/(self.data[0][c_finish] - self.data[0][c_start])
