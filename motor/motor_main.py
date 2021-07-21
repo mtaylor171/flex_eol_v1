@@ -419,7 +419,6 @@ def run_motor(MC):
             data_16bit = MC.get_analog_data() 
             adc_reading, index = data_process(data_16bit)
             temp_data[index+1] = adc_reading
-            MC.len_counter.append(len(temp_data))
             MC.data[index+1].append(temp_data[index+1])
 
 
@@ -602,7 +601,7 @@ def run_main():
             print(f"MC 2 length {i}: {len(MC_2.data[i])}")
         MC_2.motor_results(resp2, msg2)
 
-        print(MC_1.len_counter)
+        #print(MC_1.len_counter)
         
         #graph_freq(MC_1, MC_2)
         #graph_freq(MC_1, MC_2, MC_3, MC_4)
