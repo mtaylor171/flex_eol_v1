@@ -43,7 +43,7 @@ class MotorController(object):
         self.file = file
         GPIO.setwarnings(warnings)
         GPIO.setmode(mode)
-        GPIO.setup(self.motor_pin, self.GPIO.OUT)
+        GPIO.setup(self.motor_pin, GPIO.OUT)
         
         ## Default values
         self.pwm_current = 19
