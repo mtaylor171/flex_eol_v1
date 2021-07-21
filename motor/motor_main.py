@@ -261,17 +261,19 @@ class MotorController(object):
         print("-----------------------------\n")
 
     def _calculate_rms(self, c_start, c_finish):
+        print(c_start)
+        print(c_finish)
         self.rms_data[0].append(self.data[0][c_finish])
         for i in range(4, 7):
             temp_sum = 0
             temp_rms = 0
             for j in range(c_start, c_finish):
                 temp_sum += (2 * ((self.data[i][j])**2) * (self.data[0][j] - self.data[0][j-1]))
-                print(f"temp sum: {temp_sum}")
+                #print(f"temp sum: {temp_sum}")
             temp_rms = temp_sum/(self.data[0][c_finish] - self.data[0][c_start])
-            print(f"temp rms: {temp_rms}")
+            #print(f"temp rms: {temp_rms}")
             temp_rms = round((math.sqrt(temp_rms))/1000, 3)
-            print(f"temp rms: {temp_rms}")
+            #print(f"temp rms: {temp_rms}")
             self.csv_data.append(temp_rms)
 
 
