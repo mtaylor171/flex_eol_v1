@@ -193,7 +193,7 @@ class MotorController(object):
                     #writer.writerow(self.csv_data)
                     self.position_counter = 0
                     #print('\033c')
-                    print("Time: {} ".format(round(get_elapsed_us(self.INITIAL_US), 1)) + "PWM: {} ".format(self.pwm_current) + "RPM: {} ".format(round(self.freq, 1)) + "Current: {}".format(self.csv_data[2:]))
+                    #print("Time: {} ".format(round(get_elapsed_us(self.INITIAL_US), 1)) + "PWM: {} ".format(self.pwm_current) + "RPM: {} ".format(round(self.freq, 1)) + "Current: {}".format(self.csv_data[2:]))
                     #print('\033c')
                     #print("RPM: {} ".format(freq))
                 else:
