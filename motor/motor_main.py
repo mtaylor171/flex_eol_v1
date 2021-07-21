@@ -53,7 +53,7 @@ class MotorController(object):
         self.data = [[],[],[],[],[],[],[],[],[]]
         self.last_position = 0
         self.freq_count = [[],[]]
-        self.rms_data = [[],[],[],[]]
+        self.rms_data_full = [[],[],[],[]]
         self.csv_data = []
         self.current_rev_time = 0
         self.last_rev_time = 0
@@ -262,6 +262,7 @@ class MotorController(object):
 
     def _calculate_rms(self, c_start, c_finish):
         self.csv_data.append(self.data[0][c_finish])
+        self.rms_data_full[0].append(self.data[0][c_finish])
         for i in range(4, 7):
             temp_sum = 0
             temp_rms = 0
@@ -270,6 +271,7 @@ class MotorController(object):
             temp_rms = temp_sum/(self.data[0][c_finish] - self.data[0][c_start])
             temp_rms = round((math.sqrt(temp_rms))/1000, 3)
             self.csv_data.append(temp_rms)
+            self.rms_data_full[i].append(self.data[0][c_finish])
         
 
 
@@ -380,7 +382,6 @@ def end_sequence(MC):
 
 def run_motor(MC):
     temp_data = np.uint32([0,0,0,0,0,0,0,0,0])
-    temp_rms_data = np.uint32([0,0,0,0])
     adc_reading = 0x0
     index = 0x0
     pwm_counter = 0
@@ -408,13 +409,8 @@ def run_motor(MC):
         for i in range(1, 9): 
             MC.data[i].append(temp_data[i])
 
-        temp_data[0] = temp_rms_data[0] = int(round(get_elapsed_us(MC.INITIAL_US), 6) * 1000000)
+        temp_data[0] = int(round(get_elapsed_us(MC.INITIAL_US), 6) * 1000000)
         MC.data[0].append(temp_data[0])
-
-        for i in range(3, 6):
-            temp_rms_data[i-2] = temp_data[i]
-
-        MC.rms_data.append(temp_rms_data)
 
         #writer = csv.writer(file)
         #writer.writerow(temp_data)
