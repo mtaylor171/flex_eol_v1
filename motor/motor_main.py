@@ -205,7 +205,7 @@ class MotorController(object):
             if get_elapsed_us(self.position_hold_time) > 1:
                 msg = "STALL DETECTED"
                 return 0, msg
-        if(len(csv_data) > 0):
+        if(len(self.csv_data) > 0):
             for i in range(2,5):
                 self.rms_avg[i] += self.csv_data[i]
                 self.rms_counter += 1
