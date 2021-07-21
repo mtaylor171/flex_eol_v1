@@ -386,7 +386,7 @@ def start_sequence():
             pass
         if not MC_start.C_FUNCTIONS.initialize_adc():
             pass
-        print('\033c')
+        #print('\033c')
         print("*****************************")
         print("Motor Board Connected!")
         print("*****************************")
@@ -512,7 +512,7 @@ def run_main():
     	return -1
     MC_2 = MotorController(file2)
     
-    print('\033c')
+    #print('\033c')
     print("*****************************")
     print("This test will run 2 configurable modes. Please enter parameters below:\n")
     while(1):
