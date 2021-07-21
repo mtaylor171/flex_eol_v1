@@ -214,7 +214,7 @@ class MotorController(object):
                 for i in range(2,5):
                     self.rms_avg[i] = self.rms_avg[i] / self.rms_counter
                 self.rms_avg[0] = temp_data[0]
-                self.rms_avg[1] = csv_data[1]
+                self.rms_avg[1] = self.csv_data[1]
                 writer = csv.writer(self.file)
                 writer.writerow(self.rms_avg)
                 self.rms_timestamp = temp_data[0]
