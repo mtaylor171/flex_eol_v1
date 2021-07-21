@@ -28,7 +28,7 @@ class RMS_calc(object):
             temp_rms = 0
             for j in range(self.file_start,len(self.y[0])):
                 temp_sum += (2 * ((self.y[i][j])**2) * (self.x[j] - self.x[j-1]))
-            temp_rms = temp_sum/(self.x[len(self.y[0]) - 1] - self.x[file_start])
+            temp_rms = temp_sum/(self.x[len(self.y[0]) - 1] - self.x[self.file_start])
             self.rms.append(round((math.sqrt(temp_rms))/1000, 3))
         return self.rms
 
