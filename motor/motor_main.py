@@ -61,7 +61,8 @@ class MotorController(object):
         self.pwm_target = 0
         self.motor_duration = 0
         self.last_current_index = 1
-        self.len_counter = []
+        self.rms_timestamp = 0
+        self.rms_avg = [0,0,0,0,0]
 
         self.phaseA_rms_current_1sec = []
         self.phaseB_rms_current_1sec = []
@@ -184,9 +185,7 @@ class MotorController(object):
                     self._calculate_rms(self.last_current_index, (len(self.data[0]) - 1))
                     self.last_current_index = (len(self.data[0]) - 1)
                     self.csv_data.insert(1, round(freq, 1))
-                    print(self.csv_data)
-                    writer = csv.writer(self.file)
-                    writer.writerow(self.csv_data)
+
                     self.position_counter = 0
                     self.last_rev_time = self.current_rev_time
                     print('\033c')
@@ -206,6 +205,19 @@ class MotorController(object):
             if get_elapsed_us(self.position_hold_time) > 1:
                 msg = "STALL DETECTED"
                 return 0, msg
+        for i in range(2,5):
+            self.rms_avg[i] += self.csv_data[i]
+            self.rms_counter += 1
+        if(temp_data[0] - self.rms_timestamp >= 500000):
+            for i in range(2,5):
+                self.rms_avg[i] = self.rms_avg[i] / self.rms_counter
+            self.rms_avg[0] = temp_data[0]
+            self.rms_avg[1] = csv_data[1]
+            writer = csv.writer(self.file)
+            writer.writerow(self.rms_avg)
+            self.rms_timestamp = temp_data[0]
+            self.rms_counter = 0
+            self.rms_avg = [0,0,0,0,0]
 
         return 1, "All Good!"
 
