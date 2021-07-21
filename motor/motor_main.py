@@ -201,7 +201,7 @@ class MotorController(object):
                 msg = "STALL DETECTED"
                 return 0, msg
 
-        writer = csv.writer(file)
+        writer = csv.writer(self.file)
         writer.writerow(self.csv_data)
 
         return 1, "All Good!"
