@@ -215,8 +215,8 @@ class MotorController(object):
             #print('\033c')
             print("Time: {} ".format(round(get_elapsed_us(self.INITIAL_US), 1)) + "PWM: {} ".format(self.pwm_current) + "RPM: {} ".format(round(self.freq, 1)) + "Current: {}".format(self.csv_data[2:]))
 
-            writer = csv.writer(self.file)
-            writer.writerow(self.csv_data)
+            #writer = csv.writer(self.file)
+            #writer.writerow(self.csv_data)
             '''
             for i in range(2,5):
 
@@ -291,7 +291,7 @@ class MotorController(object):
             temp_rms = 0
             for j in range(c_start, c_finish+1):
                 temp_sum += (2 * ((self.data[i][j])**2) * ((self.data[0][j] - self.data[0][j-1])))
-                print(temp_sum)
+                #print(temp_sum)
             temp_rms = temp_sum/((self.data[0][c_finish] - self.data[0][c_start]))
             temp_rms = round((math.sqrt(temp_rms)), 3)
             self.csv_data.append(temp_rms)
@@ -436,8 +436,8 @@ def run_motor(MC):
         temp_data[0] = int(round(get_elapsed_us(MC.INITIAL_US), 6))
         MC.data[0].append(temp_data[0])
 
-        #writer = csv.writer(file)
-        #writer.writerow(temp_data)
+        writer = csv.writer(self.file)
+        writer.writerow(temp_data)
 
         try:
             resp, msg = MC.health_check(temp_data)
