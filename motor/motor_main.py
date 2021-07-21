@@ -202,7 +202,7 @@ class MotorController(object):
             if get_elapsed_us(self.position_hold_time) > 1:
                 msg = "STALL DETECTED"
                 return 0, msg
-
+        print(self.csv_data)
         writer = csv.writer(self.file)
         writer.writerow(self.csv_data)
 
@@ -262,19 +262,19 @@ class MotorController(object):
 
     def _calculate_rms(self, c_start, c_finish):
         
-        print(c_start)
-        print(c_finish)
+        #print(c_start)
+        #print(c_finish)
         #self.rms_data[0].append(self.data[0][c_finish])
         for i in range(4, 7):
             temp_sum = 0
             temp_rms = 0
             for j in range(c_start, c_finish):
-                print(f"start time: {self.data[0][j-1]}, finish time: {self.data[0][j]}")
-                print(f"data: {self.data[i][j-1]}")
+                #print(f"start time: {self.data[0][j-1]}, finish time: {self.data[0][j]}")
+                #print(f"data: {self.data[i][j-1]}")
                 temp_sum += (2 * ((self.data[i][j-1])**2) * (self.data[0][j] - self.data[0][j-1]))
                 #print(f"temp sum: {temp_sum}")
             temp_rms = temp_sum/(self.data[0][c_finish] - self.data[0][c_start])
-            print(f"temp rms: {temp_rms}")
+            #print(f"temp rms: {temp_rms}")
             temp_rms = round((math.sqrt(temp_rms))/1000, 3)
             #print(f"temp rms: {temp_rms}")
             self.csv_data.append(temp_rms)
@@ -584,7 +584,6 @@ def run_main():
         '''
         
         #rms1, rms2 = calculate_rms.main(FILE_OUTPUT_NAME + " mode1_test", FILE_OUTPUT_NAME + " mode2_test")
-        print(MC_2.data[4])
         print(f"Phase RMS for mode1 [A, B, C]: {rms1}")
         print(f"Phase RMS for mode2 [A, B, C]: {rms2}")
         
