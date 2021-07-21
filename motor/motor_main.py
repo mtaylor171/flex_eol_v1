@@ -293,7 +293,7 @@ class MotorController(object):
         for i in range(0, 3):
             temp_sum = 0
             temp_rms = 0
-            for j in range(data[0].index(self.timestamp_steady_state), len(self.data[0]) - 1):
+            for j in range(self.data[0].index(self.timestamp_steady_state), len(self.data[0]) - 1):
                 temp_sum += (2 * ((self.data[i][j])**2) * (self.data[0][j] - self.data[0][j-1]))
             temp_rms = temp_sum/(self.data[0][len(self.data[0]) - 1] - self.data[0][0])
             self.rms_data_full.append(round((math.sqrt(temp_rms))/1000, 3))
