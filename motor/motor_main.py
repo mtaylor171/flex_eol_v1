@@ -584,7 +584,7 @@ def run_main():
         '''
         
         #rms1, rms2 = calculate_rms.main(FILE_OUTPUT_NAME + " mode1_test", FILE_OUTPUT_NAME + " mode2_test")
-        print(MC_2.data)
+        print(MC_2.data[4])
         print(f"Phase RMS for mode1 [A, B, C]: {rms1}")
         print(f"Phase RMS for mode2 [A, B, C]: {rms2}")
         
