@@ -63,6 +63,7 @@ class MotorController(object):
         self.last_current_index = 1
         self.rms_timestamp = 0
         self.rms_avg = [0,0,0,0,0]
+        self.rms_counter = 0
 
         self.phaseA_rms_current_1sec = []
         self.phaseB_rms_current_1sec = []
