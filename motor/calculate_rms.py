@@ -21,7 +21,7 @@ class RMS_calc(object):
                     self.y[i-4].append(int(row[i]))
     #print(x)
 
-    def calc(self):
+    def calc(self): 
         for i in range(0, 3):
             temp_sum = 0
             temp_rms = 0

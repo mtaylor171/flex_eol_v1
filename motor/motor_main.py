@@ -419,8 +419,9 @@ def run_motor(MC):
             data_16bit = MC.get_analog_data() 
             adc_reading, index = data_process(data_16bit)
             temp_data[index+1] = adc_reading
-            MC.data[index+1].append(temp_data[index+1])
 
+        for i in range(1, 9): 
+            MC.data[i].append(temp_data[i])
 
         temp_data[0] = temp_rms_data[0] = int(round(get_elapsed_us(MC.INITIAL_US), 6) * 1000000)
         MC.data[0].append(temp_data[0])
