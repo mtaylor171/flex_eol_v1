@@ -144,7 +144,7 @@ class MotorController(object):
     def pwm_control(self):
         if(self.pwm_current < self.pwm_target):
             self.pwm_current += 1
-            print(self.pwm_current)
+            #print(self.pwm_current)
             #print("PWM: {}".format(self.pwm_current))
         self.pi.hardware_PWM(self.pwm_pin, 25000, self.pwm_current * 10000)
 

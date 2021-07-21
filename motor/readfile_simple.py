@@ -23,7 +23,8 @@ def graph_data():
     for i in range(1, 4):
         axs[1].plot(x, y[i])
     plt.xlabel('time [us]')
-    plt.legend(["RPM", "Phase A RMS", "Phase B RMS", "Phase C RMS"])
+    axs[1].legend(["Phase A RMS", "Phase B RMS", "Phase C RMS"])
+    axs[0].legend(["RPM"])
     plt.show()
 
 if __name__ == "__main__":
