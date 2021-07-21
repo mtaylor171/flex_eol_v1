@@ -528,7 +528,6 @@ def run_main():
             time.sleep(3)
             return -1
         MC_1.motor_results(resp1, msg1)
-        print(MC.data)
         time.sleep(2)
         #print('\033c')
         print("*****************************\n")
@@ -585,7 +584,7 @@ def run_main():
         '''
         
         #rms1, rms2 = calculate_rms.main(FILE_OUTPUT_NAME + " mode1_test", FILE_OUTPUT_NAME + " mode2_test")
-
+        print(MC_2.data)
         print(f"Phase RMS for mode1 [A, B, C]: {rms1}")
         print(f"Phase RMS for mode2 [A, B, C]: {rms2}")
         
