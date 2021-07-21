@@ -272,6 +272,8 @@ class MotorController(object):
                 #print(f"start time: {self.data[0][j-1]}, finish time: {self.data[0][j]}")
                 print(f"Length of data {i}: {len(self.data[i])}")
                 print(f"index being accessed: {j}")
+                print(f"Length of data 0: {len(self.data[0])}")
+                print(f"index being accessed: {j}")
                 #print(f"data: {self.data[i][j-1]}")
                 temp_sum += (2 * ((self.data[i][j])**2) * (self.data[0][j] - self.data[0][j-1]))
                 #print(f"temp sum: {temp_sum}")
