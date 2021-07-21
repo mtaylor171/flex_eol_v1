@@ -533,7 +533,7 @@ def run_main():
         print("*****************************")
         print("----Testing Mode 1----")
 
-        resp1, msg1 = run_motor(MC_, file1_full)
+        resp1, msg1 = run_motor(MC_1, file1_full)
         print(msg1)
         #end_sequence(MC_1)
         if resp1 < 0:
