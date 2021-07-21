@@ -472,6 +472,7 @@ def run_main():
         
     FILE_OUTPUT_NAME = str(datetime.datetime.now().replace(microsecond=0))
     file1 = open("/home/pi/Documents/MOTOR_DATA_FOLDER/" + FILE_OUTPUT_NAME + " mode1_test", 'w', newline='')
+    file2 = open("/home/pi/Documents/MOTOR_DATA_FOLDER/" + FILE_OUTPUT_NAME + " mode2_test", 'w', newline='')
 
     MC_1 = MotorController(file1)
     
@@ -521,7 +522,6 @@ def run_main():
         print("*****************************\n")
         print("----Testing Mode 2----")
         
-        file2 = open("/home/pi/Documents/MOTOR_DATA_FOLDER/" + FILE_OUTPUT_NAME + " mode2_test", 'w', newline='')
         resp2, msg2 = run_motor(MC_2)
         print(msg2)
         #end_sequence(MC_2)
