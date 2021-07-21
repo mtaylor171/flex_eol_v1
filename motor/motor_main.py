@@ -290,7 +290,7 @@ class MotorController(object):
         
     def _calculate_rms_full(self):
 
-        for i in range(0, 3):
+        for i in range(4, 7):
             temp_sum = np.int64(0)
             temp_rms = np.float64(0.0)
             print(f'index: {self.data[0].index(self.timestamp_steady_state)}')
