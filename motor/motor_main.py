@@ -208,7 +208,7 @@ class MotorController(object):
                 msg = "STALL DETECTED"
                 return 0, msg
 
-        if(temp_data[0] - self.data[0][self.last_current_index - 1] >= 500000):
+        if(temp_data[0] - self.data[0][self.last_current_index - 1] >= 0.05):
             self._calculate_rms(self.last_current_index - 1, (len(self.data[0]) - 1))
             self.last_current_index = (len(self.data[0]))
             self.csv_data.insert(1, round(self.freq, 1))
@@ -433,7 +433,7 @@ def run_motor(MC):
         for i in range(1, 9): 
             MC.data[i].append(temp_data[i])
 
-        temp_data[0] = int(round(get_elapsed_us(MC.INITIAL_US), 6) * 1000000)
+        temp_data[0] = int(round(get_elapsed_us(MC.INITIAL_US), 6))
         MC.data[0].append(temp_data[0])
 
         #writer = csv.writer(file)
@@ -445,7 +445,7 @@ def run_motor(MC):
                 MC.analog_terminate()
                 MC.shutdown()
                 return -1, msg
-            if(temp_data[0] >= MC.motor_duration * 1000000):
+            if(temp_data[0] >= MC.motor_duration):
                 MC.analog_terminate()
                 #print(hex(MC.rampdown()))
                 #time.sleep(10)
