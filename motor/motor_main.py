@@ -184,14 +184,14 @@ class MotorController(object):
                     self.current_rev_time = get_us()
                     self.freq = self._get_rpm(self.current_rev_time, self.last_rev_time)
                     #self.running_filter(freq)
-                    #self._calculate_rms(self.last_current_index, (len(self.data[0]) - 1))
-                    #self.last_current_index = (len(self.data[0]) - 1)
-                    #self.csv_data.insert(1, round(freq, 1))
+                    self._calculate_rms(self.last_current_index, (len(self.data[0]) - 1))
+                    self.last_current_index = (len(self.data[0]) - 1)
+                    self.csv_data.insert(1, round(freq, 1))
 
                     self.position_counter = 0
                     self.last_rev_time = self.current_rev_time
                     #print('\033c')
-                    #print("Time: {} ".format(round(get_elapsed_us(self.INITIAL_US), 1)) + "PWM: {} ".format(self.pwm_current) + "RPM: {} ".format(round(freq, 1)) + "Current: {}".format(self.csv_data[2:]))
+                    print("Time: {} ".format(round(get_elapsed_us(self.INITIAL_US), 1)) + "PWM: {} ".format(self.pwm_current) + "RPM: {} ".format(round(freq, 1)) + "Current: {}".format(self.csv_data[2:]))
                     #print('\033c')
                     #print("RPM: {} ".format(freq))
                 else:
@@ -207,7 +207,7 @@ class MotorController(object):
             if get_elapsed_us(self.position_hold_time) > 1:
                 msg = "STALL DETECTED"
                 return 0, msg
-
+        '''
         if(temp_data[0] - self.data[0][self.last_current_index - 1] >= 0.05):
             self._calculate_rms(self.last_current_index - 1, (len(self.data[0]) - 1))
             self.last_current_index = (len(self.data[0]))
@@ -215,9 +215,9 @@ class MotorController(object):
             #print('\033c')
             print("Time: {} ".format(round(get_elapsed_us(self.INITIAL_US), 1)) + "PWM: {} ".format(self.pwm_current) + "RPM: {} ".format(round(self.freq, 1)) + "Current: {}".format(self.csv_data[2:]))
 
-            #writer = csv.writer(self.file)
-            #writer.writerow(self.csv_data)
-            '''
+            writer = csv.writer(self.file)
+            writer.writerow(self.csv_data)
+            
             for i in range(2,5):
 
                 self.rms_avg[i] = round(self.rms_avg[i] / self.rms_counter, 1)
@@ -433,11 +433,11 @@ def run_motor(MC):
         for i in range(1, 9): 
             MC.data[i].append(temp_data[i])
 
-        temp_data[0] = int(round(get_elapsed_us(MC.INITIAL_US), 6))
+        temp_data[0] = int(round(get_elapsed_us(MC.INITIAL_US), 6) * 1000000)
         MC.data[0].append(temp_data[0])
 
-        writer = csv.writer(MC.file)
-        writer.writerow(temp_data)
+        #writer = csv.writer(MC.file)
+        #writer.writerow(temp_data)
 
         try:
             resp, msg = MC.health_check(temp_data)
