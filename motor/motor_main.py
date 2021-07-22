@@ -207,7 +207,7 @@ class MotorController(object):
             self.position_hold_time = get_us()
             self.last_position = position
         else:
-            if get_elapsed_us(self.position_hold_time) > 1:
+            if get_elapsed_us(self.position_hold_time) > 2:
                 msg = "STALL DETECTED"
                 return 0, msg
         

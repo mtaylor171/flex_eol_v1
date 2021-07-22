@@ -18,7 +18,7 @@ def collect_data():
 
 def graph_data():
     fig, axs = plt.subplots(2)
-    axs[1].set_ylim(0, 40)
+    axs[1].set_ylim(0, 35)
     axs[0].plot(x, y[0])
     for i in range(1, 4):
         axs[1].plot(x, y[i])
