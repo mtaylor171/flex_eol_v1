@@ -36,12 +36,12 @@ class MotorController(object):
     SO_FILE = os.path.dirname(os.path.realpath(__file__)) + "/motor_spi_lib.so"
     C_FUNCTIONS = CDLL(SO_FILE)
     
-    def __init__(self, file, mode = GPIO.BOARD, freq = 25000, warnings = False):
+    def __init__(self, mode = GPIO.BOARD, freq = 25000, warnings = False):
         self.pwm_pin = 19
         self.motor_pin = 15
         self.pi = pigpio.pi()
         self.INITIAL_US = get_us()
-        self.file = file
+        self.file = None
         GPIO.setwarnings(warnings)
         GPIO.setmode(mode)
         GPIO.setup(self.motor_pin, GPIO.OUT)
@@ -404,12 +404,13 @@ def start_sequence():
 def end_sequence(MC):
     MC.killall()
 
-def run_motor(MC, file):
+def run_motor(MC, file_full, file):
     temp_data = np.uint32([0,0,0,0,0,0,0,0,0])
     adc_reading = 0x0
     index = 0x0
     pwm_counter = 0
 
+    MC.file = file
     resp, msg = MC.initialize()
     if not resp:
         end_sequence(MC)
@@ -438,7 +439,7 @@ def run_motor(MC, file):
         temp_data[0] = int(round(get_elapsed_us(MC.INITIAL_US), 6) * 1000000)
         MC.data[0].append(temp_data[0])
 
-        writer = csv.writer(file)
+        writer = csv.writer(file_full)
         writer.writerow(temp_data)
 
         try:
@@ -495,8 +496,6 @@ def message_display(msg, desired_answer):
             return 0
 
 def run_main():
-        
-    FILE_OUTPUT_NAME = str(datetime.datetime.now().replace(microsecond=0))
     if(os.path.exists("/home/pi/Documents/MOTOR_DATA_FOLDER/rms_data_full")):
     	file = open("/home/pi/Documents/MOTOR_DATA_FOLDER/rms_data_full", 'a', newline = '')
     	pass
@@ -506,24 +505,17 @@ def run_main():
         HEADER = ["TIMESTAMP", "TARGET PWM", "DURATION", "PHASE A", "PHASE B", "PHASE C"]
         writer.writerow(HEADER)
 
-    file1 = open("/home/pi/Documents/MOTOR_DATA_FOLDER/" + FILE_OUTPUT_NAME + " mode1_rms_rpm", 'w', newline='')
-    file2 = open("/home/pi/Documents/MOTOR_DATA_FOLDER/" + FILE_OUTPUT_NAME + " mode2_rms_rpm", 'w', newline='')
-
-    file1_full = open("/home/pi/Documents/MOTOR_DATA_FOLDER/" + FILE_OUTPUT_NAME + " mode1_fulldata", 'w', newline='')
-    file2_full = open("/home/pi/Documents/MOTOR_DATA_FOLDER/" + FILE_OUTPUT_NAME + " mode2_fulldata", 'w', newline='')
-
-    MC_1 = MotorController(file1)
+    MC_1 = MotorController()
     
     resp, msg = MC_1.initialize()
     if not resp:
     	end_sequence(MC_1)
     	print(msg)
     	return -1
-    MC_2 = MotorController(file2)
+    MC_2 = MotorController()
     
     print('\033c')
     print("*****************************")
-    print(f"FILES FOR THIS TEST WILL BE SAVED WITH THE TIMESTAMP: {FILE_OUTPUT_NAME}")
     print("This test will run 2 configurable modes. Please enter parameters below:\n")
     while(1):
     	if not (MC_1.user_settings(input("Enter Mode 1 target duty cycle (%):"), input("Enter Mode 1 duration (s):"))) and not (MC_2.user_settings(input("Enter Mode 2 target duty cycle (%):"), input("Enter Mode 2 duration (s):"))):
@@ -539,11 +531,17 @@ def run_main():
     try:
         while(message_display("Once motor is connected please press 'y' and ENTER: ", 'y') != 1):
             pass
+        FILE_OUTPUT_NAME = str(datetime.datetime.now().replace(microsecond=0))
+	    file1 = open("/home/pi/Documents/MOTOR_DATA_FOLDER/" + FILE_OUTPUT_NAME + " mode1_rms_rpm", 'w', newline='')
+	    file2 = open("/home/pi/Documents/MOTOR_DATA_FOLDER/" + FILE_OUTPUT_NAME + " mode2_rms_rpm", 'w', newline='')
+	    file1_full = open("/home/pi/Documents/MOTOR_DATA_FOLDER/" + FILE_OUTPUT_NAME + " mode1_fulldata", 'w', newline='')
+	    file2_full = open("/home/pi/Documents/MOTOR_DATA_FOLDER/" + FILE_OUTPUT_NAME + " mode2_fulldata", 'w', newline='')
+	    
         print('\033c')
         print("*****************************")
         print("----Testing Mode 1----")
 
-        resp1, msg1 = run_motor(MC_1, file1_full)
+        resp1, msg1 = run_motor(MC_1, file1_full, file1)
         print(msg1)
         #end_sequence(MC_1)
         if resp1 < 0:
@@ -565,7 +563,7 @@ def run_main():
         print("*****************************\n")
         print("----Testing Mode 2----")
         
-        resp2, msg2 = run_motor(MC_2, file2_full)
+        resp2, msg2 = run_motor(MC_2, file2_full, file2)
         print(msg2)
         #end_sequence(MC_2)
         if resp2 < 0:
@@ -618,6 +616,7 @@ def run_main():
             time.sleep(3)
             return -1
         '''
+        print(f"FILES FOR THIS TEST WILL BE SAVED WITH THE TIMESTAMP: {FILE_OUTPUT_NAME}\n")
         print("\nCalculating total RMS values. This may take up to a minute...\n")
         rms1, rms2 = calculate_rms.main(FILE_OUTPUT_NAME + " mode1_fulldata", FILE_OUTPUT_NAME + " mode2_fulldata", MC_1.data[0].index(MC_1.timestamp_steady_state), MC_2.data[0].index(MC_2.timestamp_steady_state))
         print(f"Phase RMS for mode1 [A, B, C]: {rms1}")
