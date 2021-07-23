@@ -126,15 +126,15 @@ class MotorController(object):
         return 1, "Initialization complete!"
     
     def user_settings(self, pwm, duration):
-    	if (pwm.isnumeric()) and (int(pwm) < 100):
-    		self.pwm_target = int(pwm)
-    	else:
-    		return 1
-    	if (duration.isnumeric()) and (int(duration) <= 1800): #30 min limit
-    		self.motor_duration = int(duration) 
-    	else:
-    		return 1
-    	return 0
+        if (pwm.isnumeric()) and (int(pwm) < 100):
+            self.pwm_target = int(pwm)
+        else:
+            return 1
+        if (duration.isnumeric()) and (int(duration) <= 1800): #30 min limit
+            self.motor_duration = int(duration) 
+        else:
+            return 1
+        return 0
 
 
 
@@ -376,8 +376,8 @@ def start_sequence():
 
 
     try:
-    	#resp, msg = MC_start.initialize()
-    	#return 1
+        #resp, msg = MC_start.initialize()
+        #return 1
         if not MC_start.C_FUNCTIONS.adc_setlow():
             print("ADC set low")
             pass
@@ -497,30 +497,30 @@ def message_display(msg, desired_answer):
 
 def run_main():
     if(os.path.exists("/home/pi/Documents/MOTOR_DATA_FOLDER/rms_data_full")):
-    	file = open("/home/pi/Documents/MOTOR_DATA_FOLDER/rms_data_full", 'a', newline = '')
-    	pass
+        file = open("/home/pi/Documents/MOTOR_DATA_FOLDER/rms_data_full", 'a', newline = '')
+        pass
     else:
-    	file = open("/home/pi/Documents/MOTOR_DATA_FOLDER/rms_data_full", 'w', newline = '')
+        file = open("/home/pi/Documents/MOTOR_DATA_FOLDER/rms_data_full", 'w', newline = '')
         writer = csv.writer(file)
         HEADER = ["TIMESTAMP", "TARGET PWM", "DURATION", "PHASE A", "PHASE B", "PHASE C"]
         writer.writerow(HEADER)
 
     MC_1 = MotorController()
-    
+
     resp, msg = MC_1.initialize()
     if not resp:
-    	end_sequence(MC_1)
-    	print(msg)
-    	return -1
+        end_sequence(MC_1)
+        print(msg)
+        return -1
     MC_2 = MotorController()
-    
+
     print('\033c')
     print("*****************************")
     print("This test will run 2 configurable modes. Please enter parameters below:\n")
     while(1):
-    	if not (MC_1.user_settings(input("Enter Mode 1 target duty cycle (%):"), input("Enter Mode 1 duration (s):"))) and not (MC_2.user_settings(input("Enter Mode 2 target duty cycle (%):"), input("Enter Mode 2 duration (s):"))):
-    		break
-    	print("Settings were either incorrect or exceeded parameters. Please try again...\n")
+        if not (MC_1.user_settings(input("Enter Mode 1 target duty cycle (%):"), input("Enter Mode 1 duration (s):"))) and not (MC_2.user_settings(input("Enter Mode 2 target duty cycle (%):"), input("Enter Mode 2 duration (s):"))):
+            break
+        print("Settings were either incorrect or exceeded parameters. Please try again...\n")
 
     print(f"\nMode 1 settings: {MC_1.pwm_target}%, {MC_1.motor_duration}secs")
     print(f"Mode 2 settings: {MC_2.pwm_target}%, {MC_2.motor_duration}secs\n")
@@ -532,10 +532,10 @@ def run_main():
         while(message_display("Once motor is connected please press 'y' and ENTER: ", 'y') != 1):
             pass
         FILE_OUTPUT_NAME = str(datetime.datetime.now().replace(microsecond=0))
-	    file1 = open("/home/pi/Documents/MOTOR_DATA_FOLDER/" + FILE_OUTPUT_NAME + " mode1_rms_rpm", 'w', newline='')
-	    file2 = open("/home/pi/Documents/MOTOR_DATA_FOLDER/" + FILE_OUTPUT_NAME + " mode2_rms_rpm", 'w', newline='')
-	    file1_full = open("/home/pi/Documents/MOTOR_DATA_FOLDER/" + FILE_OUTPUT_NAME + " mode1_fulldata", 'w', newline='')
-	    file2_full = open("/home/pi/Documents/MOTOR_DATA_FOLDER/" + FILE_OUTPUT_NAME + " mode2_fulldata", 'w', newline='')
+        file1 = open("/home/pi/Documents/MOTOR_DATA_FOLDER/" + FILE_OUTPUT_NAME + " mode1_rms_rpm", 'w', newline='')
+        file2 = open("/home/pi/Documents/MOTOR_DATA_FOLDER/" + FILE_OUTPUT_NAME + " mode2_rms_rpm", 'w', newline='')
+        file1_full = open("/home/pi/Documents/MOTOR_DATA_FOLDER/" + FILE_OUTPUT_NAME + " mode1_fulldata", 'w', newline='')
+        file2_full = open("/home/pi/Documents/MOTOR_DATA_FOLDER/" + FILE_OUTPUT_NAME + " mode2_fulldata", 'w', newline='')
         print('\033c')
         print("*****************************")
         print("----Testing Mode 1----")
@@ -671,5 +671,6 @@ if __name__ == "__main__":
 
             else:
                 pass
+
 
 
