@@ -499,6 +499,9 @@ def run_main():
     FILE_OUTPUT_NAME = str(datetime.datetime.now().replace(microsecond=0))
     if(os.path.exists("/home/pi/Documents/MOTOR_DATA_FOLDER/rms_data_full")):
     	file = open("/home/pi/Documents/MOTOR_DATA_FOLDER/rms_data_full", 'a', newline = '')
+    	writer = csv.writer(file)
+    	HEADER = ["TIMESTAMP", "TARGET PWM", "DURATION", "PHASE A", "PHASE B", "PHASE C"]
+    	writer.writerow(HEADER)
     	pass
     else:
     	file = open("/home/pi/Documents/MOTOR_DATA_FOLDER/rms_data_full", 'w', newline = '')
@@ -621,7 +624,10 @@ def run_main():
         print(f"Phase RMS for mode2 [A, B, C]: {rms2}")
         rms1.insert(0, FILE_OUTPUT_NAME)
         rms2.insert(0, FILE_OUTPUT_NAME)
-
+        rms1.insert(1, MC_1.pwm_target)
+        rms2.insert(1, MC_2.pwm_target)
+        rms1.insert(2, MC_1.motor_duration)
+        rms2.insert(2, MC_2.motor_duration)
         writer = csv.writer(file)
         writer.writerow(rms1)
         writer.writerow(rms2)
