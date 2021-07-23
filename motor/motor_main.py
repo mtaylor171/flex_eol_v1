@@ -499,12 +499,12 @@ def run_main():
     FILE_OUTPUT_NAME = str(datetime.datetime.now().replace(microsecond=0))
     if(os.path.exists("/home/pi/Documents/MOTOR_DATA_FOLDER/rms_data_full")):
     	file = open("/home/pi/Documents/MOTOR_DATA_FOLDER/rms_data_full", 'a', newline = '')
-    	writer = csv.writer(file)
-    	HEADER = ["TIMESTAMP", "TARGET PWM", "DURATION", "PHASE A", "PHASE B", "PHASE C"]
-    	writer.writerow(HEADER)
     	pass
     else:
     	file = open("/home/pi/Documents/MOTOR_DATA_FOLDER/rms_data_full", 'w', newline = '')
+        writer = csv.writer(file)
+        HEADER = ["TIMESTAMP", "TARGET PWM", "DURATION", "PHASE A", "PHASE B", "PHASE C"]
+        writer.writerow(HEADER)
 
     file1 = open("/home/pi/Documents/MOTOR_DATA_FOLDER/" + FILE_OUTPUT_NAME + " mode1_rms_rpm", 'w', newline='')
     file2 = open("/home/pi/Documents/MOTOR_DATA_FOLDER/" + FILE_OUTPUT_NAME + " mode2_rms_rpm", 'w', newline='')
