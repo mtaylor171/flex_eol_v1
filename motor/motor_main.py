@@ -497,6 +497,12 @@ def message_display(msg, desired_answer):
 def run_main():
         
     FILE_OUTPUT_NAME = str(datetime.datetime.now().replace(microsecond=0))
+    if(os.path.exists("/home/pi/Documents/MOTOR_DATA_FOLDER/rms_data_full")):
+    	file = open("/home/pi/Documents/MOTOR_DATA_FOLDER/rms_data_full", 'a', newline = '')
+    	pass
+    else:
+    	file = open("/home/pi/Documents/MOTOR_DATA_FOLDER/rms_data_full", 'w', newline = '')
+
     file1 = open("/home/pi/Documents/MOTOR_DATA_FOLDER/" + FILE_OUTPUT_NAME + " mode1_rms_rpm", 'w', newline='')
     file2 = open("/home/pi/Documents/MOTOR_DATA_FOLDER/" + FILE_OUTPUT_NAME + " mode2_rms_rpm", 'w', newline='')
 
@@ -613,7 +619,12 @@ def run_main():
         rms1, rms2 = calculate_rms.main(FILE_OUTPUT_NAME + " mode1_fulldata", FILE_OUTPUT_NAME + " mode2_fulldata", MC_1.data[0].index(MC_1.timestamp_steady_state), MC_2.data[0].index(MC_2.timestamp_steady_state))
         print(f"Phase RMS for mode1 [A, B, C]: {rms1}")
         print(f"Phase RMS for mode2 [A, B, C]: {rms2}")
+        rms1.insert(0, FILE_OUTPUT_NAME)
+        rms2.insert(0, FILE_OUTPUT_NAME)
 
+        writer = csv.writer(file)
+        writer.writerow(rms1)
+        writer.writerow(rms2)
         
         #graph_freq(MC_1, MC_2)
         #graph_freq(MC_1, MC_2, MC_3, MC_4)
