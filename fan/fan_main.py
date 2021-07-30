@@ -10,6 +10,7 @@ class reader:
         self.gpio = gpio
         self.pwm = pwm
         self.pulses_per_rev = pulses_per_rev
+        self.rpm_data = []
 
         if min_RPM > 1000.0:
             min_RPM = 1000.0
@@ -67,53 +68,52 @@ class reader:
                 RPM = 0.0
         return RPM
 
+    def calc_rpm(self):
+        temp_sum = 0
+        if(len(self.rpm_data) ==0):
+            return 0
+        else:
+            for i in range(0, len(self.rpm_data)):
+                temp_sum += self.rpm_data[i]
+            return ((temp_sum/2)/(len(self.rpm_data) - 1))
+
+
+
     def cancel(self):
         self.pi.hardware_PWM(self.pwm, 25000, 0)
         self.pi.set_watchdog(self.gpio, 0)
-        self._cb.cancel() 
+        self._cb.cancel()
 
+def message_display(msg, desired_answer):
+    while(1):
+        if input(msg).lower() == desired_answer:
+            return 1
+        else:
+            print('\033c')
+            print("*****************************")
+            print("Incorrect character entered.")
+            print("*****************************")
+            return 0
 
-def start_sequence():
-    print('\033c')
-    print("*****************************")
-    print(f"NURO FAN TESTING - {FILE_OUTPUT_NAME}")
-    print("*****************************\n")
-
-    MC_start = MotorController(PWM_PIN, MOTOR_EN_PIN, 0, 0)
-
-    MC_start.bcm2835_init_spi()
-
-    print("Waiting on motor board to power up...")
-    print("(NOTE: Hold CTRL + 'C' to exit program)\n")
-
-    try:
-        while(MC_start.bcm2835_motor_ping()):
-            pass
-        #print('\033c')
-        print("*****************************")
-        print("Motor Board Connected!")
-        print("*****************************")
-
-        #end_sequence(MC_start)
-        
-        return 1
-
-    except KeyboardInterrupt:
-        end_sequence(MC_start)
-
-        return 0
-
-def run_main():
-
-    import time
-    import pigpio
-    import fan_main
+def main():
 
     RPM_GPIO = 4
     PWM_GPIO = 19
-    RUN_TIME = int(input("Enter Duration: "))
-    DUTY = int(input("Enter Duty Cycle %: "))
+    RUN_TIME = 200
+    DUTY = 95
+    #RUN_TIME = int(input("Enter Duration: "))
+    #DUTY = int(input("Enter Duty Cycle %: "))
     SAMPLE_TIME = 0.5
+
+    print('\033c')
+    print("*****************************")
+    print("\nNURO FAN TESTING\n")
+    print("This test will run the fan at 95 percent for 300s")
+    print("To stop the test at anytime, hold 'CTRL + C'\n")
+    print("*****************************\n")
+
+    while(message_display("To begin testing, press '1' and ENTER: ", '1') != 1):
+        pass
 
     pi = pigpio.pi()
 
@@ -129,38 +129,40 @@ def run_main():
             time.sleep(SAMPLE_TIME)
 
             RPM = p.RPM()
+            if((time.time() - start) > 30):
+                p.rpm_data.append(RPM)
 
-            print("RPM = {}".format(int(RPM+0.5)))
+            print('\033c')
+            print("Time: {} ".format(round(time.time() - start), 1) + "RPM = {}".format(int(RPM+0.5)/2) + " (Press CTRL + C to STOP")
         
         except KeyboardInterrupt:
+            print("*****************************")
+            print("\nTest Cancelled\n")
+            print("*****************************")
             p.cancel()
-            sys.exit()
+            rpm_avg = p.calc_rpm()
+            print(f"Average RPM of Test: {rpm_avg}")
+            return 0
         
         finally:
             pass
-
+            
+    print("*****************************")
+    print("\nTest Duration Reached\n")
+    print("\nThis program will restart 3 seconds...\n")
+    print("*****************************")
     p.cancel()
-
-    #p.stop()
+    rpm_avg = p.calc_rpm()
+    print(f"Average RPM of Test: {rpm_avg}")
+    return 0
 
 if __name__ == "__main__":
+    
+    import time
+    import pigpio
+    import fan_main
+    
     while(1):
-        if start_sequence() == 0:
-            sys.exit()
-
-        while(1):
-            state = run_main()
-
-            if state == 0 :
-                print('\033c')
-                print("*****************************")
-                print("This program will be shutting down in 3 seconds")
-                print("*****************************")
-                time.sleep(3)
-                sys.exit()
-
-            elif state == -1:
-                break
-
-            else:
-                pass
+        main()
+        while(message_display("To continue, press '2' and ENTER: ", '2') != 1):
+            pass
