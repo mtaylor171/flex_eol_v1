@@ -367,7 +367,7 @@ def start_sequence():
     print(f"NURO MOTOR TESTING - {datetime.datetime.now().replace(microsecond=0)}")
     print("*****************************\n")
 
-    MC_start = MotorController(None)
+    MC_start = MotorController()
 
     MC_start.bcm2835_init_spi()
 
