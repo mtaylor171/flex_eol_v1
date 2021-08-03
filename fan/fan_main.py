@@ -18,7 +18,7 @@ class reader:
             min_RPM = 1.0
 
         self.min_RPM = min_RPM
-        self._watchdog = 200 	# milliseconds
+        self._watchdog = 200    # milliseconds
 
         if weighting < 0.0:
             weighting = 0.0
@@ -95,22 +95,15 @@ def message_display(msg, desired_answer):
             print("*****************************")
             return 0
 
-def main():
+def main(mode, RUN_TIME, DUTY):
 
     RPM_GPIO = 4
     PWM_GPIO = 18
-    RUN_TIME = 200
-    DUTY = 95
+    #RUN_TIME = 200
+    #DUTY = 95
     #RUN_TIME = int(input("Enter Duration: "))
     #DUTY = int(input("Enter Duty Cycle %: "))
     SAMPLE_TIME = 0.5
-
-    print('\033c')
-    print("*****************************")
-    print("\nNURO FAN TESTING\n")
-    print("This test will run the fan at 95 percent for 300s")
-    print("To stop the test at anytime, hold 'CTRL + C'\n")
-    print("*****************************\n")
 
     while(message_display("To begin testing, press '1' and ENTER: ", '1') != 1):
         pass
@@ -156,6 +149,31 @@ def main():
     print(f"Average RPM of Test: {rpm_avg}")
     return 0
 
+def user_input(message, limit):
+    mode_max = input(message)
+    if (mode_max.isnumeric()) and (int(mode_max) < limit):
+        return int(mode_max)
+    else:
+        return 0
+
+def start_sequence():
+    settings = [[],[]]
+
+    print('\033c')
+    print("*****************************")
+    print("\nNURO FAN TESTING\n")
+    print("To stop the test at anytime, hold 'CTRL + C'\n")
+    print("*****************************\n")
+
+    mode_max = user_input("Enter number of settings (max 10)", 10)
+
+    for i in range(0, mode_max):
+        settings[0].append(user_input(f"Enter mode {i} duration (mins):"), 60000)   # max 1000 hours
+        settings[1].append(user_input(f"Enter mode {i} PWM %:"), 96)  # max duty cycle 96%
+
+    return settings
+
+
 if __name__ == "__main__":
     
     import time
@@ -163,6 +181,14 @@ if __name__ == "__main__":
     import fan_main
     
     while(1):
-        main()
-        while(message_display("To continue, press '2' and ENTER: ", '2') != 1):
-            pass
+
+    settings = start_sequence()
+    if not settings:
+        break
+    else:
+        for i in range(0, len(settings[0])):
+            if not main(i, settings[0][i], settings[1][i]):
+                break
+            else:
+                while(message_display("To continue, press '2' and ENTER: ", '2') != 1):
+                    pass
