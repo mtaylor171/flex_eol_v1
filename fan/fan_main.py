@@ -197,6 +197,7 @@ if __name__ == "__main__":
                 pass
             for i in range(0, len(settings[0])):
                 RPM_AVG.append(main(i, settings[0][i], settings[1][i]))
+                time.sleep(3)
                     #while(message_display("To continue, press '2' and ENTER: ", '2') != 1):
                     #    pass
             display_results(RPM_AVG, settings)
