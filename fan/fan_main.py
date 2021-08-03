@@ -98,7 +98,7 @@ def message_display(msg, desired_answer):
 def main(mode, RUN_TIME, DUTY):
 
     RPM_GPIO = 4
-    PWM_GPIO = 18
+    PWM_GPIO = 19
     #RUN_TIME = 200
     #DUTY = 95
     #RUN_TIME = int(input("Enter Duration: "))
