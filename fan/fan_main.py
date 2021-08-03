@@ -105,7 +105,8 @@ def main(mode, RUN_TIME, DUTY):
     #DUTY = int(input("Enter Duty Cycle %: "))
     SAMPLE_TIME = 0.5
 
-    print(f"TESTING MODE {mode}...\n")
+    print('\033c')
+    print(f"\nTESTING MODE {mode + 1}...\n")
     while(message_display("To begin testing, press '1' and ENTER: ", '1') != 1):
         pass
 
@@ -143,7 +144,6 @@ def main(mode, RUN_TIME, DUTY):
             
     print("*****************************")
     print("\nTest Duration Reached\n")
-    print("\nThis program will restart 3 seconds...\n")
     print("*****************************")
     p.cancel()
     rpm_avg = p.calc_rpm()
@@ -160,7 +160,7 @@ def user_input(message, limit):
 def start_sequence():
     settings = [[],[]]
 
-    #print('\033c')
+    print('\033c')
     print("*****************************")
     print("\nNURO FAN TESTING\n")
     print("To stop the test at anytime, hold 'CTRL + C'\n")
