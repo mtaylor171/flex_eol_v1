@@ -182,13 +182,13 @@ if __name__ == "__main__":
     
     while(1):
 
-    settings = start_sequence()
-    if not settings:
-        break
-    else:
-        for i in range(0, len(settings[0])):
-            if not main(i, settings[0][i], settings[1][i]):
-                break
-            else:
-                while(message_display("To continue, press '2' and ENTER: ", '2') != 1):
-                    pass
+        settings = start_sequence()
+        if not settings:
+            break
+        else:
+            for i in range(0, len(settings[0])):
+                if not main(i, settings[0][i], settings[1][i]):
+                    break
+                else:
+                    while(message_display("To continue, press '2' and ENTER: ", '2') != 1):
+                        pass
