@@ -165,11 +165,11 @@ def start_sequence():
     print("To stop the test at anytime, hold 'CTRL + C'\n")
     print("*****************************\n")
 
-    mode_max = user_input("Enter number of settings (max 10)", 10)
+    mode_max = user_input("Enter number of settings (max 10):", 10)
 
     for i in range(0, mode_max):
-        settings[0].append(user_input((f"Enter mode {i} duration (mins):")), 60000)   # max 1000 hours
-        settings[1].append(user_input((f"Enter mode {i} PWM %:")), 96)  # max duty cycle 96%
+        settings[0].append(user_input("Enter mode {i} duration (mins):"), 60000)   # max 1000 hours
+        settings[1].append(user_input("Enter mode {i} PWM %:"), 96)  # max duty cycle 96%
 
     return settings
 
