@@ -142,12 +142,12 @@ def main(mode, RUN_TIME, DUTY):
         finally:
             pass
             
-    print("*****************************")
-    print("\nTest Duration Reached\n")
-    print("*****************************")
+    #print("*****************************")
+    #print("\nTest Duration Reached\n")
+    #print("*****************************")
     p.cancel()
     rpm_avg = p.calc_rpm()
-    print(f"Average RPM of Test: {rpm_avg}")
+    #print(f"Average RPM of Test: {rpm_avg}")
     return 1
 
 def user_input(message, limit):
@@ -160,7 +160,7 @@ def user_input(message, limit):
 def display_results(RPM_AVG, settings):
     print("\nTEST RESULTS:\n")
     for i in range(0, len(settings[0])):
-        print(f"Mode = {i}, Duration = {settings[0][i]}, PWM = {settings[1][i]}, Avg RPM = {RPM_AVG[i]}")
+        print(f"Mode = {i+1}, Duration = {settings[0][i]}, PWM = {settings[1][i]}%, Avg RPM = {RPM_AVG[i]}")
 
 def start_sequence():
     settings = [[],[]]
