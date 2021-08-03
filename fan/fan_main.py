@@ -148,7 +148,7 @@ def main(mode, RUN_TIME, DUTY):
     p.cancel()
     rpm_avg = p.calc_rpm()
     print(f"Average RPM of Test: {rpm_avg}")
-    return 0
+    return 1
 
 def user_input(message, limit):
     mode_max = input(message)
