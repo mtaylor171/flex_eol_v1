@@ -105,6 +105,7 @@ def main(mode, RUN_TIME, DUTY):
     #DUTY = int(input("Enter Duty Cycle %: "))
     SAMPLE_TIME = 0.5
 
+    print(f"TESTING MODE {mode}...\n")
     while(message_display("To begin testing, press '1' and ENTER: ", '1') != 1):
         pass
 
@@ -159,7 +160,7 @@ def user_input(message, limit):
 def start_sequence():
     settings = [[],[]]
 
-    print('\033c')
+    #print('\033c')
     print("*****************************")
     print("\nNURO FAN TESTING\n")
     print("To stop the test at anytime, hold 'CTRL + C'\n")
@@ -168,8 +169,8 @@ def start_sequence():
     mode_max = user_input("Enter number of settings (max 10):", 10)
 
     for i in range(0, mode_max):
-        settings[0].append(user_input(f"Enter mode {i} duration (mins):", 60000))   # max 1000 hours
-        settings[1].append(user_input(f"Enter mode {i} PWM %:", 96))  # max duty cycle 96%
+        settings[0].append(user_input(f"Enter mode {i + 1} duration (mins):", 60000))   # max 1000 hours
+        settings[1].append(user_input(f"Enter mode {i + 1} PWM %:", 96))  # max duty cycle 96%
 
     return settings
 
