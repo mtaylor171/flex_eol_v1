@@ -160,7 +160,7 @@ def user_input(message, limit):
 def display_results(RPM_AVG, settings):
     print("\nTEST RESULTS:\n")
     for i in range(0, len(settings[0])):
-        print(f"Mode = {i+1}, Duration = {settings[0][i]}, PWM = {settings[1][i]}%, Avg RPM = {RPM_AVG[i]}")
+        print(f"Mode = {i+1}, Duration = {settings[0][i]}, PWM = {settings[1][i]} %, Avg RPM = {RPM_AVG[i]}")
 
 def start_sequence():
     settings = [[],[]]
@@ -196,7 +196,7 @@ if __name__ == "__main__":
             while(message_display("\nTo begin testing, press '1' and ENTER: ", '1') != 1):
                 pass
             for i in range(0, len(settings[0])):
-                RPM_AVG.append(main(i, settings[0][i] * 60, settings[1][i] * 60))
+                RPM_AVG.append(main(i, settings[0][i], settings[1][i]))
                     #while(message_display("To continue, press '2' and ENTER: ", '2') != 1):
                     #    pass
             display_results(RPM_AVG, settings)
