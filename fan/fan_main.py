@@ -2,6 +2,8 @@ import time
 import pigpio
 import sys
 
+FILE_OUTPUT_NAME = ''
+
 class reader:
 
     def __init__(self, pi, gpio, pwm, pulses_per_rev = 1.0, weighting = 0.0, min_RPM = 5.0):
@@ -99,16 +101,11 @@ def main(mode, RUN_TIME, DUTY):
 
     RPM_GPIO = 4
     PWM_GPIO = 19
-    #RUN_TIME = 200
-    #DUTY = 95
-    #RUN_TIME = int(input("Enter Duration: "))
-    #DUTY = int(input("Enter Duty Cycle %: "))
-    SAMPLE_TIME = 0.5
+
+    SAMPLE_TIME = 5
 
     print('\033c')
     print(f"\nTESTING MODE {mode + 1}...\n")
-    #while(message_display("To begin testing, press '1' and ENTER: ", '1') != 1):
-    #    pass
 
     pi = pigpio.pi()
 
@@ -141,13 +138,10 @@ def main(mode, RUN_TIME, DUTY):
         
         finally:
             pass
-            
-    #print("*****************************")
-    #print("\nTest Duration Reached\n")
-    #print("*****************************")
+
     p.cancel()
     rpm_avg = p.calc_rpm()
-    #print(f"Average RPM of Test: {rpm_avg}")
+
     return rpm_avg
 
 def user_input(message, limit):
@@ -190,6 +184,19 @@ if __name__ == "__main__":
         RPM_AVG = []
 
         settings = start_sequence()
+
+        FILE_OUTPUT_NAME = str(datetime.datetime.now().replace(microsecond=0))
+        file_raw = open("/home/pi/Documents/FAN_DATA_FOLDER/" + FILE_OUTPUT_NAME + "_RAW", 'w', newline='')
+
+        if(os.path.exists("/home/pi/Documents/FAN_DATA_FOLDER/FILE_MAIN")):
+            file = open("/home/pi/Documents/FAN_DATA_FOLDER/FILE_MAIN", 'a', newline = '')
+            pass
+        else:
+            file = open("/home/pi/Documents/FAN_DATA_FOLDER/FILE_MAIN", 'w', newline = '')
+            writer = csv.writer(file)
+            HEADER = ["MODE", "REPETITION", "TIMESTAMP", "PWM", "RPM"]
+            writer.writerow(HEADER)
+        
         if not settings:
             break
         else:

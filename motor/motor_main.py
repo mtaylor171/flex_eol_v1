@@ -445,6 +445,10 @@ def run_motor(MC, file_full, file):
         try:
             resp, msg = MC.health_check(temp_data)
             if not resp:
+                for i in range(0, 4):
+                    reg_data = MC.C_FUNCTIONS.motor_register_read(i)
+                    print('Register {}:'.format(i) + ' {}'.format(hex(reg_data)));
+                    print('\n')
                 MC.analog_terminate()
                 MC.shutdown()
                 return -1, msg
