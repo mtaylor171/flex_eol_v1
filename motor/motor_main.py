@@ -107,7 +107,7 @@ class MotorController(object):
                 return 0, msg
         '''
         if not self.C_FUNCTIONS.initialize_adc():
-            print("\nADC Initialized Successfully\n")
+            print("ADC Initialized Successfully\n")
         else:
             msg = "ERROR: ADC Initialize Failed. Please Disconnect motor."
             return 0, msg
@@ -490,6 +490,7 @@ def run_main():
             end_sequence(MC_0)
             print(msg)
             return -1
+        print('\033c')
         if(input("Would you like to burn-in motor? ('y' = yes, 'n' = no): ") == 'y'):
             while(message_display("Press 'y' and ENTER to start burn-in: ", 'y') != 1):
                 pass
@@ -499,7 +500,7 @@ def run_main():
 
         # OPEN FILE
 
-        #print('\033c')
+        print('\033c')
         print("*****************************")
         print("This test will run 2 modes:\n")
         print(f"\nMode 1 settings: {MC_1.pwm_target}%, {MC_1.motor_duration}secs")
