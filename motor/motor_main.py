@@ -482,7 +482,7 @@ def run_main():
 
     MC_1 = MotorController(25, 60)      # Mode 1, 25% for 1 min
 
-    MC_2 = MotorController(80, 60)      # Mode 2, 80% for 1 min
+    MC_2 = MotorController(40, 60)      # Mode 2, 80% for 1 min
 
     try:
         resp, msg = MC_0.initialize()
@@ -490,10 +490,10 @@ def run_main():
             end_sequence(MC_0)
             print(msg)
             return -1
-        if(input("Would you like to burn-in motor? ('y' = yes, 'n' = no)") == 'y'):
+        if(input("Would you like to burn-in motor? ('y' = yes, 'n' = no): ") == 'y'):
             while(message_display("Press 'y' and ENTER to start burn-in: ", 'y') != 1):
                 pass
-            print("Burn in...")
+            print("Burn in...\n")
             # *********************BURN IN HERE************************
         FILE_OUTPUT_NAME = str(datetime.datetime.now().replace(microsecond=0))
 
@@ -508,7 +508,7 @@ def run_main():
         while(message_display("Press 'y' and ENTER to start test: ", 'y') != 1):
             pass
         file1 = file_open(FILE_OUTPUT_NAME, " mode1_rms_rpm", 'w')
-        file1 = file_open(FILE_OUTPUT_NAME, " mode1_rms_rpm", 'w')
+        file2 = file_open(FILE_OUTPUT_NAME, " mode2_rms_rpm", 'w')
         file1_full = file_open(FILE_OUTPUT_NAME, " mode1_fulldata", 'w')
         file2_full = file_open(FILE_OUTPUT_NAME, " mode2_fulldata", 'w')
 
