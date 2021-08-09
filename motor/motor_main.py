@@ -23,6 +23,8 @@ kDt = 0.5
 kAlpha = 0.01
 kBeta = 0.0001
 
+MOTOR_PATH = "/home/pi/Documents/MOTOR_DATA_FOLDER/"
+
 def get_us():
     now = time.perf_counter()
     return now
@@ -36,7 +38,7 @@ class MotorController(object):
     SO_FILE = os.path.dirname(os.path.realpath(__file__)) + "/motor_spi_lib.so"
     C_FUNCTIONS = CDLL(SO_FILE)
     
-    def __init__(self, mode = GPIO.BOARD, freq = 25000, warnings = False):
+    def __init__(self, mode = GPIO.BOARD, pwm_target, motor_duration, freq = 25000, warnings = False):
         self.pwm_pin = 19
         self.motor_pin = 15
         self.pi = pigpio.pi()
@@ -58,8 +60,8 @@ class MotorController(object):
         self.current_rev_time = 0
         self.last_rev_time = 0
         self.master_pos_counter = 0
-        self.pwm_target = 0
-        self.motor_duration = 0
+        self.pwm_target = pwm_target
+        self.motor_duration = motor_duration
         self.last_current_index = 2
         self.rms_timestamp = 0
         self.rms_avg = [0,0,0,0,0]
@@ -83,22 +85,9 @@ class MotorController(object):
         msg = ""
         self.pi.hardware_PWM(self.pwm_pin, 0, 0)
 
-        '''
-        while(1):
-            adc_regs = self.C_FUNCTIONS.adc_setlow()
-            print(hex(adc_regs))
-            mesg = input("Continue? ").lower()
-            if mesg == 'y':
-                break
-            else:
-                pass
-        '''
+        _self_check = self.C_FUNCTIONS.adc_setlow()     # Set DRV inputs low thru ADC
 
-        _self_check = self.C_FUNCTIONS.adc_setlow()
-        if not _self_check:
-            print("Motor inputs pulled LOW, ready to initialize motor driver.")
-
-        GPIO.output(self.motor_pin, 1)
+        GPIO.output(self.motor_pin, 1)                  # DRV enable
         self.INITIAL_US = get_us()
         _self_check = self.C_FUNCTIONS.initialize_motor()
 
@@ -263,7 +252,7 @@ class MotorController(object):
     def killall(self):
         self.pi.hardware_PWM(self.pwm_pin, 0, 0)
         GPIO.output(self.motor_pin, 0)
-        #self.pi.close()
+        self.pi.stop()
 
     def motor_results(self, resp, msg):
         print("\n\n-----------------------------\n")
@@ -339,35 +328,13 @@ class MotorController(object):
         #TODO: Implement Function here
         return 0
 
-#def graph_freq(MC_1, MC_2, MC_3, MC_4):
-def graph_freq(MC_1, MC_2):
-    #fig, axs = plt.subplots(2)
-    #fig.suptitle('Motor Frequency')
-    plt.xlabel('Time (ms)')
-    
-    #axs[0].set_ylabel(f'Mode 1 RPM @ {MC_1.pwm_target}% target duty')
-    #axs[1].set_ylabel(f'Mode 2 RPM @ {MC_2.pwm_target}% target duty')
-    
-    #axs[0].plot(MC_1.freq_count[0], MC_1.freq_count[1])
-    #axs[1].plot(MC_2.freq_count[0], MC_2.freq_count[1])
-    
-    plt.plot(MC_1.freq_count[0], MC_1.freq_count[1])
-    plt.plot(MC_2.freq_count[0], MC_2.freq_count[1])
-    #plt.plot(MC_3.freq_count[0], MC_3.freq_count[1])
-    #plt.plot(MC_4.freq_count[0], MC_4.freq_count[1])
-    #plt.legend([f"TEST1 - PWM target: {MC_1.pwm_target}%", f"TEST2 - PWM target: {MC_2.pwm_target}%", f"TEST3 - PWM target: {MC_3.pwm_target}%", f"TEST4 - PWM target: {MC_4.pwm_target}%"])
-    
-    plt.legend([f"TEST1 - PWM target: {MC_1.pwm_target}%", f"TEST2 - PWM target: {MC_2.pwm_target}%"])
-    plt.show()
-
 def start_sequence():
     print('\033c')
     print("*****************************")
-    #print(FILE_OUTPUT_NAME)
     print(f"NURO MOTOR TESTING - {datetime.datetime.now().replace(microsecond=0)}")
     print("*****************************\n")
 
-    MC_start = MotorController()
+    MC_start = MotorController(0, 0)
 
     MC_start.bcm2835_init_spi()
 
@@ -376,8 +343,6 @@ def start_sequence():
 
 
     try:
-        #resp, msg = MC_start.initialize()
-        #return 1
         if not MC_start.C_FUNCTIONS.adc_setlow():
             print("ADC set low")
             pass
@@ -499,54 +464,60 @@ def message_display(msg, desired_answer):
             print("*****************************")
             return 0
 
+def file_open(timestamp, name, action):
+    file = open(MOTOR_PATH + timestamp + name, action, newline='')
+    return file
+
 def run_main():
     if(os.path.exists("/home/pi/Documents/MOTOR_DATA_FOLDER/rms_data_full")):
-        file = open("/home/pi/Documents/MOTOR_DATA_FOLDER/rms_data_full", 'a', newline = '')
+        file = file_open('', "rms_data_full", 'a')
         pass
     else:
-        file = open("/home/pi/Documents/MOTOR_DATA_FOLDER/rms_data_full", 'w', newline = '')
+        file = file_open('', "rms_data_full", 'w')
         writer = csv.writer(file)
         HEADER = ["TIMESTAMP", "TARGET PWM", "DURATION", "PHASE A", "PHASE B", "PHASE C"]
         writer.writerow(HEADER)
 
-    MC_1 = MotorController()
+    MC_0 = MotorController(80, 2700)    # Burn in, 80% for 45 mins
 
-    resp, msg = MC_1.initialize()
-    if not resp:
-        end_sequence(MC_1)
-        print(msg)
-        return -1
-    MC_2 = MotorController()
+    MC_1 = MotorController(25, 60)      # Mode 1, 25% for 1 min
 
-    print('\033c')
-    print("*****************************")
-    print("This test will run 2 configurable modes. Please enter parameters below:\n")
-    while(1):
-        if not (MC_1.user_settings(input("Enter Mode 1 target duty cycle (%):"), input("Enter Mode 1 duration (s):"))) and not (MC_2.user_settings(input("Enter Mode 2 target duty cycle (%):"), input("Enter Mode 2 duration (s):"))):
-            break
-        print("Settings were either incorrect or exceeded parameters. Please try again...\n")
+    MC_2 = MotorController(80, 60)      # Mode 2, 80% for 1 min
 
-    print(f"\nMode 1 settings: {MC_1.pwm_target}%, {MC_1.motor_duration}secs")
-    print(f"Mode 2 settings: {MC_2.pwm_target}%, {MC_2.motor_duration}secs\n")
-
-    #print('\033c')
-    print("----PLEASE CONNECT MOTOR----\n")
-    
     try:
-        while(message_display("Once motor is connected please press 'y' and ENTER: ", 'y') != 1):
-            pass
+        resp, msg = MC_0.initialize()
+        if not resp:
+            end_sequence(MC_0)
+            print(msg)
+            return -1
+        if(input("Would you like to burn-in motor? ('y' = yes, 'n' = no)") == 'y'):
+            while(message_display("Press 'y' and ENTER to start burn-in: ", 'y') != 1):
+                pass
+            print("Burn in...")
+            # *********************BURN IN HERE************************
         FILE_OUTPUT_NAME = str(datetime.datetime.now().replace(microsecond=0))
-        file1 = open("/home/pi/Documents/MOTOR_DATA_FOLDER/" + FILE_OUTPUT_NAME + " mode1_rms_rpm", 'w', newline='')
-        file2 = open("/home/pi/Documents/MOTOR_DATA_FOLDER/" + FILE_OUTPUT_NAME + " mode2_rms_rpm", 'w', newline='')
-        file1_full = open("/home/pi/Documents/MOTOR_DATA_FOLDER/" + FILE_OUTPUT_NAME + " mode1_fulldata", 'w', newline='')
-        file2_full = open("/home/pi/Documents/MOTOR_DATA_FOLDER/" + FILE_OUTPUT_NAME + " mode2_fulldata", 'w', newline='')
+
+        # OPEN FILE
+
+        #print('\033c')
+        print("*****************************")
+        print("This test will run 2 modes:\n")
+        print(f"\nMode 1 settings: {MC_1.pwm_target}%, {MC_1.motor_duration}secs")
+        print(f"Mode 2 settings: {MC_2.pwm_target}%, {MC_2.motor_duration}secs\n")
+
+        while(message_display("Press 'y' and ENTER to start test: ", 'y') != 1):
+            pass
+        file1 = file_open(FILE_OUTPUT_NAME, " mode1_rms_rpm", 'w')
+        file1 = file_open(FILE_OUTPUT_NAME, " mode1_rms_rpm", 'w')
+        file1_full = file_open(FILE_OUTPUT_NAME, " mode1_fulldata", 'w')
+        file2_full = file_open(FILE_OUTPUT_NAME, " mode2_fulldata", 'w')
+
         print('\033c')
         print("*****************************")
         print("----Testing Mode 1----")
 
         resp1, msg1 = run_motor(MC_1, file1_full, file1)
         print(msg1)
-        #end_sequence(MC_1)
         if resp1 < 0:
             #print('\033c')
             print(msg1)
@@ -554,10 +525,10 @@ def run_main():
                 pass
             print('\033c')
             print("\nRestarting test program...")
-            if(os.path.exists("/home/pi/Documents/MOTOR_DATA_FOLDER/" + FILE_OUTPUT_NAME + " mode1_fulldata")):
-                os.remove("/home/pi/Documents/MOTOR_DATA_FOLDER/" + FILE_OUTPUT_NAME + " mode1_fulldata")
-            if(os.path.exists("/home/pi/Documents/MOTOR_DATA_FOLDER/" + FILE_OUTPUT_NAME + " mode2_fulldata")):
-                os.remove("/home/pi/Documents/MOTOR_DATA_FOLDER/" + FILE_OUTPUT_NAME + " mode2_fulldata")
+            if(os.path.exists(MOTOR_PATH + FILE_OUTPUT_NAME + " mode1_fulldata")):
+                os.remove(MOTOR_PATH + FILE_OUTPUT_NAME + " mode1_fulldata")
+            if(os.path.exists(MOTOR_PATH + FILE_OUTPUT_NAME + " mode2_fulldata")):
+                os.remove(MOTOR_PATH + FILE_OUTPUT_NAME + " mode2_fulldata")
             time.sleep(3)
             return -1
         MC_1.motor_results(resp1, msg1)
@@ -577,48 +548,13 @@ def run_main():
                 pass
             print('\033c')
             print("Restarting test program...")
-            if(os.path.exists("/home/pi/Documents/MOTOR_DATA_FOLDER/" + FILE_OUTPUT_NAME + " mode1_fulldata")):
-                os.remove("/home/pi/Documents/MOTOR_DATA_FOLDER/" + FILE_OUTPUT_NAME + " mode1_fulldata")
-            if(os.path.exists("/home/pi/Documents/MOTOR_DATA_FOLDER/" + FILE_OUTPUT_NAME + " mode2_fulldata")):
-                os.remove("/home/pi/Documents/MOTOR_DATA_FOLDER/" + FILE_OUTPUT_NAME + " mode2_fulldata")
+            if(os.path.exists(MOTOR_PATH + FILE_OUTPUT_NAME + " mode1_fulldata")):
+                os.remove(MOTOR_PATH + FILE_OUTPUT_NAME + " mode1_fulldata")
+            if(os.path.exists(MOTOR_PATH + FILE_OUTPUT_NAME + " mode2_fulldata")):
+                os.remove(MOTOR_PATH  + FILE_OUTPUT_NAME + " mode2_fulldata")
             time.sleep(3)
             return -1
-        #time.sleep(5)
-        '''
-        print("*****************************\n")
-        print("----Testing Mode 3----")
-        
-        file3 = open("/home/pi/Documents/MOTOR_DATA_FOLDER/" + FILE_OUTPUT_NAME + " mode3_test", 'w', newline='')
-        resp3, msg3 = run_motor(MC_3, file3)
-        print(msg3)
-        #end_sequence(MC_2)
-        if resp3 < 0:
-            #print('\033c')
-            print(msg3)
-            while(message_display("\nType 'c' and ENTER to continue: ", 'c') != 1):
-                pass
-            print('\033c')
-            print("Restarting test program...")
-            time.sleep(3)
-            return -1
-        time.sleep(5)
-        print("*****************************\n")
-        print("----Testing Mode 4----")
-        
-        file4 = open("/home/pi/Documents/MOTOR_DATA_FOLDER/" + FILE_OUTPUT_NAME + " mode4_test", 'w', newline='')
-        resp4, msg4 = run_motor(MC_4, file4)
-        print(msg2)
-        #end_sequence(MC_2)
-        if resp4 < 0:
-            #print('\033c')
-            print(msg2)
-            while(message_display("\nType 'c' and ENTER to continue: ", 'c') != 1):
-                pass
-            print('\033c')
-            print("Restarting test program...")
-            time.sleep(3)
-            return -1
-        '''
+
         print(f"FILES FOR THIS TEST WILL BE SAVED WITH THE TIMESTAMP: {FILE_OUTPUT_NAME}\n")
         print("\nCalculating total RMS values. This may take up to a minute...\n")
         rms1, rms2 = calculate_rms.main(FILE_OUTPUT_NAME + " mode1_fulldata", FILE_OUTPUT_NAME + " mode2_fulldata", MC_1.data[0].index(MC_1.timestamp_steady_state), MC_2.data[0].index(MC_2.timestamp_steady_state))
@@ -634,10 +570,6 @@ def run_main():
         writer.writerow(rms1)
         writer.writerow(rms2)
         
-        #graph_freq(MC_1, MC_2)
-        #graph_freq(MC_1, MC_2, MC_3, MC_4)
-
-        #print('\033c')
         print("Please disconnect motor!\n")
         while( message_display("Press 'c' and ENTER to continue to next motor, or CTRL + 'C' to exit program: ", 'c') != 1):
             pass
@@ -648,10 +580,14 @@ def run_main():
         time.sleep(1)
         return 1
     except KeyboardInterrupt:
+        if(os.path.exists(MOTOR_PATH + FILE_OUTPUT_NAME + " mode1_fulldata")):
+            os.remove(MOTOR_PATH + FILE_OUTPUT_NAME + " mode1_fulldata")
+        if(os.path.exists(MOTOR_PATH + FILE_OUTPUT_NAME + " mode2_fulldata")):
+            os.remove(MOTOR_PATH + FILE_OUTPUT_NAME + " mode2_fulldata")
+        time.sleep(3)
+        end_sequence(MC_0)
         end_sequence(MC_1)
         end_sequence(MC_2)
-        #end_sequence(MC_3)
-        #end_sequence(MC_4)
         return 0
 
 if __name__ == "__main__":
