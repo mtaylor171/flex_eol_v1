@@ -163,9 +163,7 @@ class MotorController(object):
                 code[i-1] = 1
             else:
                 code[i-1] = 0
-        #print("Code: {}".format(code))
         position = self._find_positions(code) # Convert code into a position (1-6)
-        #print("Position: {}".format(position))
         if(self.last_position != position): # Check if position is different from the last recorded position
             if(self.last_position != 0):
                 self.master_pos_counter += 1
@@ -182,10 +180,6 @@ class MotorController(object):
                     #writer = csv.writer(self.file)
                     #writer.writerow(self.csv_data)
                     self.position_counter = 0
-                    #print('\033c')
-                    #print("Time: {} ".format(round(get_elapsed_us(self.INITIAL_US), 1)) + "PWM: {} ".format(self.pwm_current) + "RPM: {} ".format(round(self.freq, 1)) + "Current: {}".format(self.csv_data[2:]))
-                    #print('\033c')
-                    #print("RPM: {} ".format(freq))
                 else:
                     rms_val = 0
                 #print("Elapsed: {}, ".format(get_elapsed_us(self.INITIAL_US)) + "Position: {}, ".format(position) + "Frequency: {} ".format(round(freq, 2)) + "Filtered freq: {} ".format(x[-1]) +"PWM: {} ".format(self.pwm_current) + "Freq/PWM = {} ".format(reluctance) + "RMS Current: {}".format(rms_val))
@@ -204,7 +198,7 @@ class MotorController(object):
             self._calculate_rms(self.last_current_index - 1, (len(self.data[0]) - 1))
             self.last_current_index = (len(self.data[0]))
             self.csv_data.insert(1, round(self.freq, 1))
-            #print('\033c')
+            print('\033c')
             print("Time: {} ".format(round(get_elapsed_us(self.INITIAL_US), 1)) + "PWM: {} ".format(self.pwm_current) + "RPM: {} ".format(round(self.freq, 1)) + "Current: {}".format(self.csv_data[2:]))
 
             writer = csv.writer(self.file)
@@ -233,7 +227,7 @@ class MotorController(object):
 
         for duty in range(self.pwm_current, 0, -1):
             self.pi.hardware_PWM(self.pwm_pin, 25000, duty * 10000)
-            print("PWM: {}".format(duty))
+            #print("PWM: {}".format(duty))
             time.sleep(0.2)
         self.pi.hardware_PWM(self.pwm_pin, 0, 0)
         #GPIO.output(self.motor_pin, 0)
@@ -404,8 +398,9 @@ def run_motor(MC, file_full, file):
         temp_data[0] = int(round(get_elapsed_us(MC.INITIAL_US), 6) * 1000000)
         MC.data[0].append(temp_data[0])
 
-        writer = csv.writer(file_full)
-        writer.writerow(temp_data)
+        if file_full is not None:
+            writer = csv.writer(file_full)
+            writer.writerow(temp_data)
 
         try:
             resp, msg = MC.health_check(temp_data)
@@ -478,7 +473,7 @@ def run_main():
         HEADER = ["TIMESTAMP", "TARGET PWM", "DURATION", "PHASE A", "PHASE B", "PHASE C"]
         writer.writerow(HEADER)
 
-    MC_0 = MotorController(80, 2700)    # Burn in, 80% for 45 mins
+    MC_0 = MotorController(25, 2700)    # Burn in, 80% for 45 mins
 
     MC_1 = MotorController(25, 60)      # Mode 1, 25% for 1 min
 
@@ -495,13 +490,13 @@ def run_main():
             while(message_display("Press 'y' and ENTER to start burn-in: ", 'y') != 1):
                 pass
             print("Burn in...\n")
-            # *********************BURN IN HERE************************
+            file_burn = file_open(FILE_OUTPUT_NAME, " burn_rms_rpm", 'w')
+            resp0, msg0 = run_motor(MC_0, None, file_burn)
         FILE_OUTPUT_NAME = str(datetime.datetime.now().replace(microsecond=0))
 
         # OPEN FILE
 
         print('\033c')
-        print("*****************************")
         print("This test will run 2 modes:\n")
         print(f"\nMode 1 settings: {MC_1.pwm_target}%, {MC_1.motor_duration}secs")
         print(f"Mode 2 settings: {MC_2.pwm_target}%, {MC_2.motor_duration}secs\n")
