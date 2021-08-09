@@ -38,7 +38,7 @@ class MotorController(object):
     SO_FILE = os.path.dirname(os.path.realpath(__file__)) + "/motor_spi_lib.so"
     C_FUNCTIONS = CDLL(SO_FILE)
     
-    def __init__(self, mode = GPIO.BOARD, pwm_target, motor_duration, freq = 25000, warnings = False):
+    def __init__(self, pwm_target, motor_duration, mode = GPIO.BOARD, freq = 25000, warnings = False):
         self.pwm_pin = 19
         self.motor_pin = 15
         self.pi = pigpio.pi()
