@@ -564,6 +564,9 @@ def run_main():
         print(f"Phase RMS for mode1 [A, B, C]: {rms1}")
         print(f"Phase RMS for mode2 [A, B, C]: {rms2}")
 
+        print(f"file 1 name: {file1.name}")
+        print(f"file 2 name: {file2.name}")
+
         rpm1, current_1, rpm_2, current_2 = motor_results.main(file1.name, file2.name, 0, 0)
 
         rms1.insert(0, FILE_OUTPUT_NAME)
