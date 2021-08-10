@@ -71,4 +71,4 @@ def main(filename_1, filename_2, file1_start, file2_start):
     current_1 = test1.test_current()
     current_2 = test2.test_current()
 
-    return rpm1, current_1, rpm_2, current_2
+    return rpm_1, current_1, rpm_2, current_2
