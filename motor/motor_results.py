@@ -42,7 +42,7 @@ class RMS_calc(object):
 
     def test_current(self):
         i_data = [[],[],[]]
-        for k in range(2, 5):
+        for k in range(1, 4):
             i_max = 0
             i_min = 1000000
 
