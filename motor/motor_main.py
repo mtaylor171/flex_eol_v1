@@ -556,7 +556,8 @@ def run_main():
                 os.remove(MOTOR_PATH  + FILE_OUTPUT_NAME + " mode2_fulldata")
             time.sleep(3)
             return -1
-
+        file1.close()
+        file2.close()
         print(f"FILES FOR THIS TEST WILL BE SAVED WITH THE TIMESTAMP: {FILE_OUTPUT_NAME}\n")
         print("\nCalculating total RMS values. This may take up to a minute...\n")
         rms1, rms2 = calculate_rms.main(file1_full.name, file2_full.name, MC_1.data[0].index(MC_1.timestamp_steady_state), MC_2.data[0].index(MC_2.timestamp_steady_state))
