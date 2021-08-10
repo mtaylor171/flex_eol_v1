@@ -558,8 +558,9 @@ def run_main():
             return -1
         file1.close()
         file2.close()
-        print(f"FILES FOR THIS TEST WILL BE SAVED WITH THE TIMESTAMP: {FILE_OUTPUT_NAME}\n")
-        print("\nCalculating total RMS values. This may take up to a minute...\n")
+        print('\033c')
+        print(f"FILES FOR THIS TEST WILL BE SAVED WITH THE TIMESTAMP: {FILE_OUTPUT_NAME}")
+        print("\nRunning Diagnostics. This may take up to a minute...\n")
         r1, r2 = calculate_rms.main(file1_full.name, file2_full.name, MC_1.data[0].index(MC_1.timestamp_steady_state), MC_2.data[0].index(MC_2.timestamp_steady_state))
         
         print(f"Phase RMS for mode1 [A, B, C]: {r1}")
