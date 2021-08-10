@@ -612,20 +612,24 @@ def run_main():
         rms1.insert(14, rpm1[2])
         rms2.insert(14, rpm2[2])
 
-        if (rms1[4] in range (9, 13)) and (rms1[6] in range(9, 13)) and (rms1[8] in range(9, 13)) and (rms1[12] > 249) and (rms1[13] < 351):
+        if (rms1[4] in range (9, 17)) and (rms1[6] in range(9, 17)) and (rms1[8] in range(9, 17)) and (rms1[12] > 249) and (rms1[13] < 351):
             rms1_msg = "PASS"
         else:
             rms1_msg = "FAIL"
 
-        if (rms2[4] in range (9, 13)) and (rms2[6] in range(9, 13)) and (rms2[8] in range(9, 13)) and (rms2[12] > 240) and (rms2[13] < 351):
+        if (rms2[4] in range (9, 17)) and (rms2[6] in range(9, 17)) and (rms2[8] in range(9, 17)) and (rms2[12] > 1450) and (rms2[13] < 1550):
             rms2_msg = "PASS"
         else:
             rms2_msg = "FAIL"
 
         if (rms1_msg == "PASS") and (rms2_msg == "PASS"):
-            print("MOTOR TEST PASSED")
+            print("*****************************")
+            print("\nMOTOR TEST PASSED")
+            print("*****************************\n")
         else:
+            print("*****************************")
             print("\nMOTOR TEST FAILED - PLEASE SEE FILE 'rms_data_full' for diagnostics")
+            print("*****************************\n")
 
         rms1.insert(15, rms1_msg)
         rms2.insert(15, rms2_msg)

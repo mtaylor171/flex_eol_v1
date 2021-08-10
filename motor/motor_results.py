@@ -18,8 +18,8 @@ class RMS_calc(object):
             next(plots)
             for row in plots:
                 self.x.append(int(row[0]))
-                for i in range(0,4):
-                    self.y[i].append(float(row[i]))
+                for i in range(1,5):
+                    self.y[i-1].append(float(row[i]))
     #print(x)
 
     def test_rpm(self):
