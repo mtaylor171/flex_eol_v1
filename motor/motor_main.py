@@ -562,11 +562,8 @@ def run_main():
         print("\nCalculating total RMS values. This may take up to a minute...\n")
         r1, r2 = calculate_rms.main(file1_full.name, file2_full.name, MC_1.data[0].index(MC_1.timestamp_steady_state), MC_2.data[0].index(MC_2.timestamp_steady_state))
         
-        print(f"Phase RMS for mode1 [A, B, C]: {rms1}")
-        print(f"Phase RMS for mode2 [A, B, C]: {rms2}")
-
-        print(f"file 1 name: {file1.name}")
-        print(f"file 2 name: {file2.name}")
+        print(f"Phase RMS for mode1 [A, B, C]: {r1}")
+        print(f"Phase RMS for mode2 [A, B, C]: {r2}")
 
         rpm1, current_1, rpm2, current_2 = motor_results.main(file1.name, file2.name, 30, 30)
 
