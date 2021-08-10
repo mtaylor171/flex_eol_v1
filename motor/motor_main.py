@@ -462,9 +462,9 @@ def run_main():
 
     MC_0 = MotorController(80, 2700)    # Burn in, 80% for 45 mins (2700 sec)
 
-    MC_1 = MotorController(25, 60)      # Mode 1, 25% for 1 min
+    MC_1 = MotorController(25, 5)      # Mode 1, 25% for 1 min
 
-    MC_2 = MotorController(80,60)      # Mode 2, 80% for 1 min
+    MC_2 = MotorController(80,5)      # Mode 2, 80% for 1 min
 
     try:
         resp, msg = MC_0.initialize()
@@ -559,8 +559,8 @@ def run_main():
 
         print(f"FILES FOR THIS TEST WILL BE SAVED WITH THE TIMESTAMP: {FILE_OUTPUT_NAME}\n")
         print("\nCalculating total RMS values. This may take up to a minute...\n")
-        rms1, rms2 = calculate_rms.main(FILE_OUTPUT_NAME + " mode1_fulldata", FILE_OUTPUT_NAME + " mode2_fulldata", MC_1.data[0].index(MC_1.timestamp_steady_state), MC_2.data[0].index(MC_2.timestamp_steady_state))
-        rpm1, current_1, rpm_2, current_2 = motor_results.main(FILE_OUTPUT_NAME + " mode1_rms_rpm", FILE_OUTPUT_NAME + " mode2_rms_rpm", 1, 1)
+        rms1, rms2 = calculate_rms.main(file1_full.name, file2_full.name, MC_1.data[0].index(MC_1.timestamp_steady_state), MC_2.data[0].index(MC_2.timestamp_steady_state))
+        rpm1, current_1, rpm_2, current_2 = motor_results.main(file1.name, file2.name, 1, 1)
 
         print(f"Phase RMS for mode1 [A, B, C]: {rms1}")
         print(f"Phase RMS for mode2 [A, B, C]: {rms2}")
