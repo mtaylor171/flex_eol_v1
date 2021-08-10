@@ -526,10 +526,6 @@ def run_main():
                 pass
             print('\033c')
             print("\nRestarting test program...")
-            if(os.path.exists(MOTOR_PATH + FILE_OUTPUT_NAME + " mode1_fulldata")):
-                os.remove(MOTOR_PATH + FILE_OUTPUT_NAME + " mode1_fulldata")
-            if(os.path.exists(MOTOR_PATH + FILE_OUTPUT_NAME + " mode2_fulldata")):
-                os.remove(MOTOR_PATH + FILE_OUTPUT_NAME + " mode2_fulldata")
             time.sleep(3)
             return -1
 
@@ -550,10 +546,6 @@ def run_main():
                 pass
             print('\033c')
             print("Restarting test program...")
-            if(os.path.exists(MOTOR_PATH + FILE_OUTPUT_NAME + " mode1_fulldata")):
-                os.remove(MOTOR_PATH + FILE_OUTPUT_NAME + " mode1_fulldata")
-            if(os.path.exists(MOTOR_PATH + FILE_OUTPUT_NAME + " mode2_fulldata")):
-                os.remove(MOTOR_PATH  + FILE_OUTPUT_NAME + " mode2_fulldata")
             time.sleep(3)
             return -1
         file1.close()
