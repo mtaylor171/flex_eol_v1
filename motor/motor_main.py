@@ -460,7 +460,7 @@ def run_main():
         HEADER = ["TIMESTAMP", "TARGET PWM", "DURATION", "PHASE A min", "PHASE A max", "PHASE B min", "PHASE B max",  "PHASE C min", "PHASE C max", "PHASE A avg", "PHASE B avg", "PHASE C avg", "RPM min", "RPM max", "RPM avg"]
         writer.writerow(HEADER)
 
-    MC_0 = MotorController(40, 5)    # Burn in, 80% for 45 mins (2700 sec)
+    MC_0 = MotorController(40, 300)    # Burn in, 80% for 45 mins (2700 sec)
 
     MC_1 = MotorController(25, 60)      # Mode 1, 25% for 1 min
 
