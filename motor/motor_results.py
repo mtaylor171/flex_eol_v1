@@ -27,14 +27,14 @@ class RMS_calc(object):
         rpm_min = 1000000
         temp_sum = 0
         rpm_data = []
-        for i in range(0, len(self.x)):
+        for i in range(self.file_start, len(self.x)):
             temp_sum += self.y[1][i]
 
             if rpm_min > self.y[1][i]:
                 rpm_min = self.y[1][i]
             if rpm_max < self.y[1][i]:
                 rpm_max = self.y[1][i]
-        avg = round(temp_sum / len(self.x), 1)
+        avg = round(temp_sum / (len(self.x) - self.file_start), 1)
         rpm_data.append(rpm_min)
         rpm_data.append(rpm_max)
         rpm_data.append(avg)
@@ -46,7 +46,7 @@ class RMS_calc(object):
             i_max = 0
             i_min = 1000000
 
-            for j in range(0, len(self.x)):
+            for j in range(self.file_start, len(self.x)):
 
                 if i_min > self.y[k][j]:
                     i_min = self.y[k][j]
