@@ -53,8 +53,8 @@ class RMS_calc(object):
                 if i_max < self.y[k][j]:
                     i_max = self.y[k][j]
 
-            i_data[k-2].append(i_min)
-            i_data[k-2].append(i_max)
+            i_data[k-1].append(i_min)
+            i_data[k-1].append(i_max)
 
         return i_data
 

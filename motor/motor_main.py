@@ -625,7 +625,7 @@ def run_main():
         if (rms1_msg == "PASS") and (rms2_msg == "PASS"):
             print("MOTOR TEST PASSED")
         else:
-            print("MOTOR TEST FAILED - PLEASE SEE FILE 'rms_data_full' for diagnostics")
+            print("\nMOTOR TEST FAILED - PLEASE SEE FILE 'rms_data_full' for diagnostics")
 
         rms1.insert(15, rms1_msg)
         rms2.insert(15, rms2_msg)
