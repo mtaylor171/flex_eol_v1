@@ -4,7 +4,6 @@ import numpy as np
 from numpy.ctypeslib import ndpointer
 import csv
 import matplotlib
-#matplotlib.use('Agg')
 from matplotlib import pyplot as plt
 import datetime
 from datetime import timedelta
@@ -24,19 +23,18 @@ kDt = 0.5
 kAlpha = 0.01
 kBeta = 0.0001
 
-MOTOR_PATH = "/home/pi/Documents/FLEX_DATA_FOLDER/"
+MOTOR_PATH = "/home/pi/Documents/FLEX_DATA_FOLDER/" 
 
-def get_us():
-    now = time.perf_counter()
+def get_us():                   # Gets current time
+    now = time.perf_counter()   
     return now
 
-# returns the elapsed time by subtracting the timestamp provided by the current time n
-def get_elapsed_us(timestamp):
+def get_elapsed_us(timestamp):  # Gets elapsed time
     temp = get_us()
     return (temp - timestamp)
 
 class MotorController(object):
-    SO_FILE = os.path.dirname(os.path.realpath(__file__)) + "/motor_spi_lib.so"
+    SO_FILE = os.path.dirname(os.path.realpath(__file__)) + "/motor_spi_lib.so"     # C wrapper for SPI Communication
     C_FUNCTIONS = CDLL(SO_FILE)
     
     def __init__(self, pwm_target, motor_duration, mode = GPIO.BOARD, freq = 25000, warnings = False):
@@ -84,13 +82,13 @@ class MotorController(object):
     def initialize(self):
         print("\n*****************************\n")
         msg = ""
-        self.pi.hardware_PWM(self.pwm_pin, 0, 0)
+        self.pi.hardware_PWM(self.pwm_pin, 0, 0)        # Set motor PWM to zero
 
         _self_check = self.C_FUNCTIONS.adc_setlow()     # Set DRV inputs low thru ADC
 
-        GPIO.output(self.motor_pin, 1)                  # DRV enable
-        self.INITIAL_US = get_us()
-        _self_check = self.C_FUNCTIONS.initialize_motor()
+        GPIO.output(self.motor_pin, 1)                  # Enable DRV Controller
+        self.INITIAL_US = get_us()    
+        _self_check = self.C_FUNCTIONS.initialize_motor()   # Write to DRV Registers
 
         if not _self_check:
             print("\nMotor Initialized Successfully\n")
@@ -107,7 +105,7 @@ class MotorController(object):
                 msg = "Registers Not Selected to be Correct."
                 return 0, msg
         '''
-        if not self.C_FUNCTIONS.initialize_adc():
+        if not self.C_FUNCTIONS.initialize_adc():   # Write to ADC Registers
             print("ADC Initialized Successfully\n")
         else:
             msg = "ERROR: ADC Initialize Failed. Please Disconnect motor."
@@ -115,19 +113,19 @@ class MotorController(object):
 
         return 1, "Initialization complete!"
     
+    # Checks user inputs are numeric and within ranges
     def user_settings(self, pwm, duration):
-        if (pwm.isnumeric()) and (int(pwm) < 100):
+        if (pwm.isnumeric()) and (int(pwm) < 100):  # 100% duty cycle limit
             self.pwm_target = int(pwm)
         else:
             return 1
-        if (duration.isnumeric()) and (int(duration) <= 1800): #30 min limit
+        if (duration.isnumeric()) and (int(duration) <= 1800): # 30 minute limit (This can be increased)
             self.motor_duration = int(duration) 
         else:
             return 1
         return 0
 
-
-
+    # Send first command to ADC to initiate recurring ADC read
     def analog_in_initial_send(self):
         self.C_FUNCTIONS.getAnalogInAll_InitialSend()
 
@@ -136,13 +134,13 @@ class MotorController(object):
     def pwm_control(self):
         if(self.pwm_current < self.pwm_target):
             self.pwm_current += 1
-            #print(self.pwm_current)
-            #print("PWM: {}".format(self.pwm_current))
         self.pi.hardware_PWM(self.pwm_pin, 25000, self.pwm_current * 10000)
 
+    # Initialize SPI settings on RPi
     def bcm2835_init_spi(self):
         self.C_FUNCTIONS.AD5592_Init()
 
+    # Ping DRV controller by sending first register command (1xPWM)
     def bcm2835_motor_ping(self):
         GPIO.output(self.motor_pin, 1)
         return self.C_FUNCTIONS.motor_ping()
@@ -150,27 +148,30 @@ class MotorController(object):
         if not self.C_FUNCTIONS.initialize_adc():
             pass
 
+    # Get ADC data through SPI
     def get_analog_data(self):
         return self.C_FUNCTIONS.getAnalogInAll_Receive()
     
+    # Kill ADC read operation
     def analog_terminate(self):
         self.C_FUNCTIONS.getAnalogInAll_Terminate()
 
+    # Checks the health of the motor (current, position, rpm, stall protection)
     def health_check(self, temp_data):
         code = [0,0,0]
         self.csv_data = []
 
-        for i in range(1,4): # Turning Hall sensor channel data into a 3-digit position code
-            if(temp_data[i] > 1500): # Set a threshold of 1650mV for the hall pulse
+        for i in range(1,4):            # Turn hall sensor sensor data into a 3-digit position code
+            if(temp_data[i] > 1500):    # Set a threshold of 1500mV for the hall pulse
                 code[i-1] = 1
             else:
                 code[i-1] = 0
-        position = self._find_positions(code) # Convert code into a position (1-6)
-        if(self.last_position != position): # Check if position is different from the last recorded position
+        position = self._find_positions(code)   # Convert code into a position (1-6)
+        if(self.last_position != position):     # Check if position is different from the last recorded position
             if(self.last_position != 0):
                 self.master_pos_counter += 1
                 self.position_counter += 1 
-                if((self.position_counter % 30) == 0):
+                if((self.position_counter % 30) == 0):  # Calculate RPM every third revolution (90 position changes per revolution)
                     self.current_rev_time = get_us()
                     self.freq = self._get_rpm(self.current_rev_time, self.last_rev_time)
                     self.last_rev_time = self.current_rev_time
@@ -184,11 +185,12 @@ class MotorController(object):
             self.position_hold_time = get_us()
             self.last_position = position
         else:
-            if get_elapsed_us(self.position_hold_time) > 2:
+            if get_elapsed_us(self.position_hold_time) > 2:     # If position has not changed in 2 seconds, detect stall
                 msg = "STALL DETECTED"
                 return 0, msg
-        
-        if(len(self.data[0]) > 2) and (temp_data[0] - self.data[0][self.last_current_index - 1] >= 1000000):
+
+        #Every second, calculate RMS current on phases and write to csv, along with rpm data
+        if(len(self.data[0]) > 2) and (temp_data[0] - self.data[0][self.last_current_index - 1] >= 1000000): 
             self._calculate_rms(self.last_current_index - 1, (len(self.data[0]) - 1))
             self.last_current_index = (len(self.data[0]))
             self.csv_data.insert(1, round(self.freq, 1))
@@ -198,7 +200,7 @@ class MotorController(object):
             writer = csv.writer(self.file)
             writer.writerow(self.csv_data)
             for i in range(2, 5):
-                if(self.csv_data[i]) > 35:
+                if(self.csv_data[i]) > 35:          # Raise overcurrent flag if current is over 35A (This can be changed)
                     msg = "OVERCURRENT DETECTED"
                     return 0, msg
 
@@ -218,34 +220,28 @@ class MotorController(object):
         self.v.append(v_k)
         self.r.append(r_k)        
 
+    # Ramps down PWM by 1% each 0.2sec
     def rampdown(self):
         print("Starting rampdown...")
-        #self.pi.hardware_PWM(self.pwm_pin, 0, 0)
-        #return self.C_FUNCTIONS.motor_freewheel()
-
         for duty in range(self.pwm_current, 0, -1):
             self.pi.hardware_PWM(self.pwm_pin, 25000, duty * 10000)
             #print("PWM: {}".format(duty))
             time.sleep(0.2)
         self.pi.hardware_PWM(self.pwm_pin, 0, 0)
-        #GPIO.output(self.motor_pin, 0)
-        # graph_data()
-        #return 0
         
+    # This occurs if stall/overcurrent happens - PWM will be set to zero straight away and DRV disabled
     def shutdown(self):
-    # This occurs when there is a danger event like a stall or overcurrent
-    # In this case, we want to shut off everything immediately to prevent further damage
         print("Starting Shutdown")
         self.pi.hardware_PWM(self.pwm_pin, 0, 0)
         GPIO.output(self.motor_pin, 0)
-        # graph_data()
-        #return 0
 
+    # Set PWM to zero and disable DRV, and close the pigpio operation
     def killall(self):
         self.pi.hardware_PWM(self.pwm_pin, 0, 0)
         GPIO.output(self.motor_pin, 0)
         self.pi.stop()
 
+    # Calculate RMS current by integrating the square of current data (https://en.wikipedia.org/wiki/Root_mean_square)
     def _calculate_rms(self, c_start, c_finish):
         self.csv_data.append(self.data[0][c_finish])
         for i in range(4, 7):
@@ -253,32 +249,19 @@ class MotorController(object):
             temp_rms = np.float64(0.0)
             for j in range(c_start, c_finish+1):
                 temp_sum += (2 * (((self.data[i][j])/1000)**2) * ((self.data[0][j] - self.data[0][j-1])))
-                #print(temp_sum)
             temp_rms = temp_sum/((self.data[0][c_finish] - self.data[0][c_start]))
             temp_rms = round((math.sqrt(temp_rms)), 3)
             self.csv_data.append(temp_rms)
-        
-    def _calculate_rms_full(self):
 
-        for i in range(4, 7):
-            temp_sum = np.int64(0)
-            temp_rms = np.float64(0.0)
-            for j in range(self.data[0].index(self.timestamp_steady_state), len(self.data[0])):
-                temp_sum += (2 * ((self.data[i][j])**2) * ((self.data[0][j] - self.data[0][j-1]) / 1000))
-            temp_rms = temp_sum/((self.data[0][len(self.data[0]) - 1] - self.data[0][0]) / 1000)
-            self.rms_data_full.append(round((math.sqrt(temp_rms)), 3))
-        return self.rms_data_full
-
-    def _read_registers(self):
     # Reads all registers on DRV8343 and prints them
+    def _read_registers(self):
         for i in range(19):
             reg_data = self.C_FUNCTIONS.motor_register_read(i)
             print('Register {}:'.format(i) + ' {}'.format(hex(reg_data)));
             print('\n')
 
-    def _find_positions(self, code):
     # Converts the hall sensor pulse data into a position (1-6)
-    # If the hall sensor pulses do not align with one of these positions, a zero is returned at which there will a flag raised
+    def _find_positions(self, code):
         if code == [1, 0, 1]:
             return 1
         elif code == [0, 0, 1]:
@@ -294,6 +277,7 @@ class MotorController(object):
         else:
             return 7
     
+    # Calculate RPM by looking at the time it took for 1/3 cycle
     def _get_rpm(self, current_rev_time, last_rev_time):
 
         freq = 60*( 1/((current_rev_time - last_rev_time)*3) )
@@ -301,14 +285,7 @@ class MotorController(object):
         self.freq_count[1].append(freq)
         return freq
 
-    def _motor_reluctance(self, freq):
-        #return freq/self.pwm_current
-        return 0
-        
-    def _revolution_rms(self):
-        #TODO: Implement Function here
-        return 0
-
+# This runs at the start of any new test. Will provide basic information and poll the motor board until it is powered on
 def start_sequence():
     print('\033c')
     print("*****************************")
@@ -347,9 +324,11 @@ def start_sequence():
 
         return 0
 
+# Runs at end of any test. Kills all operations
 def end_sequence(MC):
     MC.killall()
 
+# Main motor run script. Handles PWM control and all the incoming raw data. Calls motor health function
 def run_motor(MC, file_full, file):
     temp_data = np.uint32([0,0,0,0,0,0,0,0,0])
     adc_reading = 0x0
@@ -401,8 +380,6 @@ def run_motor(MC, file_full, file):
                 return -1, msg
             if(temp_data[0] >= MC.motor_duration * 1000000):
                 MC.analog_terminate()
-                #print(hex(MC.rampdown()))
-                #time.sleep(10)
                 
                 MC.rampdown()
                 
@@ -418,6 +395,7 @@ def run_motor(MC, file_full, file):
         finally:
             pass
 
+# Converts raw data to their voltage/current/temperatures - channels 6/7 still need calibrating
 def data_process(data):
     index = ((data >> 12) & 0x7)
     data_converted = int(data & 0xFFF) * (5000/4095)
@@ -435,6 +413,7 @@ def data_process(data):
     return adc_reading, index
     #return data_converted, index
 
+# Compares user input to desired answer - provides warning if wrong key was pressed
 def message_display(msg, desired_answer):
     while(1):
         if input(msg).lower() == desired_answer:
@@ -446,10 +425,12 @@ def message_display(msg, desired_answer):
             print("*****************************")
             return 0
 
+# Opens files 
 def file_open(timestamp, name, action):
     file = open(MOTOR_PATH + timestamp + name, action, newline='')
     return file
 
+# Main script
 def run_main():
     if(os.path.exists("/home/pi/Documents/FLEX_DATA_FOLDER/rms_data_full")):
         file = file_open('', "rms_data_full", 'a')
