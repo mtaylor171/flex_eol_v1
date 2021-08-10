@@ -560,7 +560,7 @@ def run_main():
         file2.close()
         print(f"FILES FOR THIS TEST WILL BE SAVED WITH THE TIMESTAMP: {FILE_OUTPUT_NAME}\n")
         print("\nCalculating total RMS values. This may take up to a minute...\n")
-        rms1, rms2 = calculate_rms.main(file1_full.name, file2_full.name, MC_1.data[0].index(MC_1.timestamp_steady_state), MC_2.data[0].index(MC_2.timestamp_steady_state))
+        r1, r2 = calculate_rms.main(file1_full.name, file2_full.name, MC_1.data[0].index(MC_1.timestamp_steady_state), MC_2.data[0].index(MC_2.timestamp_steady_state))
         
         print(f"Phase RMS for mode1 [A, B, C]: {rms1}")
         print(f"Phase RMS for mode2 [A, B, C]: {rms2}")
@@ -568,7 +568,7 @@ def run_main():
         print(f"file 1 name: {file1.name}")
         print(f"file 2 name: {file2.name}")
 
-        rpm1, current_1, rpm2, current_2 = motor_results.main(file1.name, file2.name, 0, 0)
+        rpm1, current_1, rpm2, current_2 = motor_results.main(file1.name, file2.name, 30, 30)
 
         rms1.insert(0, FILE_OUTPUT_NAME)
         rms2.insert(0, FILE_OUTPUT_NAME)
@@ -595,21 +595,29 @@ def run_main():
         rms2.insert(7, current_2[2][0])
         rms2.insert(8, current_2[2][1])
 
-        rms1.insert(9, rpm1[0])
-        rms2.insert(9, rpm2[0])
+        rms1.insert(9, r1[0])
+        rms1.insert(10, r1[1])
+        rms1.insert(11, r1[2])
 
-        rms1.insert(10, rpm1[1])
-        rms2.insert(10, rpm2[1])
+        rms2.insert(9, r2[0])
+        rms2.insert(10, r2[1])
+        rms2.insert(11, r2[2])
 
-        rms1.insert(11, rpm1[2])
-        rms2.insert(11, rpm2[2])
+        rms1.insert(12, rpm1[0])
+        rms2.insert(12, rpm2[0])
+
+        rms1.insert(13, rpm1[1])
+        rms2.insert(13, rpm2[1])
+
+        rms1.insert(14, rpm1[2])
+        rms2.insert(14, rpm2[2])
 
         writer = csv.writer(file)
         writer.writerow(rms1)
         writer.writerow(rms2)
 
         
-
+        file.close()
         print("Please disconnect motor!\n")
         while( message_display("Press 'c' and ENTER to continue to next motor, or CTRL + 'C' to exit program: ", 'c') != 1):
             pass
