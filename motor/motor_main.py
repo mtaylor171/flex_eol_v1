@@ -567,7 +567,7 @@ def run_main():
         print(f"file 1 name: {file1.name}")
         print(f"file 2 name: {file2.name}")
 
-        rpm1, current_1, rpm_2, current_2 = motor_results.main(file1.name, file2.name, 0, 0)
+        rpm1, current_1, rpm_2, current_2 = motor_results.main(file1_full.name, file2_full.name, 0, 0)
 
         rms1.insert(0, FILE_OUTPUT_NAME)
         rms2.insert(0, FILE_OUTPUT_NAME)
