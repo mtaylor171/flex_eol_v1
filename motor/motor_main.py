@@ -457,7 +457,7 @@ def run_main():
     else:
         file = file_open('', "rms_data_full", 'w')
         writer = csv.writer(file)
-        HEADER = ["TIMESTAMP", "TARGET PWM", "DURATION", "PHASE A min", "PHASE A max", "PHASE B min", "PHASE B max",  "PHASE C min", "PHASE C max", "PHASE A avg", "PHASE B avg", "PHASE C avg", "RPM min", "RPM max", "RPM avg"]
+        HEADER = ["TIMESTAMP", "TARGET PWM", "DURATION", "PHASE A min", "PHASE A max", "PHASE B min", "PHASE B max",  "PHASE C min", "PHASE C max", "PHASE A avg", "PHASE B avg", "PHASE C avg", "RPM min", "RPM max", "RPM avg", "PASS/FAIL"]
         writer.writerow(HEADER)
 
     MC_0 = MotorController(40, 300)    # Burn in, 80% for 45 mins (2700 sec)
@@ -611,6 +611,25 @@ def run_main():
 
         rms1.insert(14, rpm1[2])
         rms2.insert(14, rpm2[2])
+
+        if (rms1[4] in range (9, 13)) and (rms1[6] in range(9, 13)) and (rms1[8] in range(9, 13)) and (rms1[12] > 249) and (rms1[13] < 351):
+            rms1_msg = "PASS"
+        else:
+            rms1_msg = "FAIL"
+
+        if (rms2[4] in range (9, 13)) and (rms2[6] in range(9, 13)) and (rms2[8] in range(9, 13)) and (rms2[12] > 240) and (rms2[13] < 351):
+            rms2_msg = "PASS"
+        else:
+            rms2_msg = "FAIL"
+
+        if (rms1_msg == "PASS") and (rms2_msg == "PASS"):
+            print("MOTOR TEST PASSED")
+
+        elseD
+        print("MOTOR TEST FAILED - PLEASE SEE FILE 'rms_data_full'")
+
+        rms1.insert(15, rms1_msg)
+        rms2.insert(15, rms2_msg)
 
         writer = csv.writer(file)
         writer.writerow(rms1)
