@@ -34,7 +34,7 @@ class RMS_calc(object):
                 rpm_min = self.y[1][i]
             if rpm_max < self.y[1][i]:
                 rpm_max = self.y[1][i]
-        avg = round(temp_sum / i, 1)
+        avg = round(temp_sum / len(self.x), 1)
         rpm_data.append(rpm_min)
         rpm_data.append(rpm_max)
         rpm_data.append(avg)
