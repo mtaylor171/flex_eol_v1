@@ -464,7 +464,7 @@ def run_main():
 
     MC_1 = MotorController(25, 60)      # Mode 1, 25% for 1 min
 
-    MC_2 = MotorController(60, 60)      # Mode 2, 80% for 1 min
+    MC_2 = MotorController(80, 60)      # Mode 2, 80% for 1 min
 
     try:
         resp, msg = MC_0.initialize()
@@ -605,12 +605,12 @@ def run_main():
         rms1.insert(14, rpm1[2])
         rms2.insert(14, rpm2[2])
 
-        if (rms1[4] in range (9, 20)) and (rms1[6] in range(9, 20)) and (rms1[8] in range(9, 20)) and (rms1[12] > 0) and (rms1[13] < 10000):
+        if (rms1[4] in range (9, 18)) and (rms1[6] in range(9, 18)) and (rms1[8] in range(9, 18)) and (rms1[12] > 200) and (rms1[13] < 400):
             rms1_msg = "PASS"
         else:
             rms1_msg = "FAIL"
 
-        if (rms2[4] in range (9, 20)) and (rms2[6] in range(9, 20)) and (rms2[8] in range(9, 20)) and (rms2[12] > 0) and (rms2[13] < 10000):
+        if (rms2[4] in range (9, 18)) and (rms2[6] in range(9, 18)) and (rms2[8] in range(9, 18)) and (rms2[12] > 1400) and (rms2[13] < 1600):
             rms2_msg = "PASS"
         else:
             rms2_msg = "FAIL"
