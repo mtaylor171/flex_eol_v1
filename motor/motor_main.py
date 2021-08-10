@@ -23,7 +23,7 @@ kDt = 0.5
 kAlpha = 0.01
 kBeta = 0.0001
 
-MOTOR_PATH = "/home/pi/Documents/MOTOR_DATA_FOLDER/"
+MOTOR_PATH = "/home/pi/Documents/FLEX_DATA_FOLDER/"
 
 def get_us():
     now = time.perf_counter()
@@ -158,6 +158,7 @@ class MotorController(object):
     def health_check(self, temp_data):
         code = [0,0,0]
         self.csv_data = []
+
         for i in range(1,4): # Turning Hall sensor channel data into a 3-digit position code
             if(temp_data[i] > 1500): # Set a threshold of 1650mV for the hall pulse
                 code[i-1] = 1
@@ -172,17 +173,9 @@ class MotorController(object):
                     self.current_rev_time = get_us()
                     self.freq = self._get_rpm(self.current_rev_time, self.last_rev_time)
                     self.last_rev_time = self.current_rev_time
-                    #self.running_filter(freq)
-                #if(self.position_counter == 270):
-                    #self._calculate_rms(self.last_current_index, (len(self.data[0]) - 1))
-                    #self.last_current_index = (len(self.data[0]) - 1)
-                    #self.csv_data.insert(1, round(self.freq, 1))
-                    #writer = csv.writer(self.file)
-                    #writer.writerow(self.csv_data)
                     self.position_counter = 0
                 else:
                     rms_val = 0
-                #print("Elapsed: {}, ".format(get_elapsed_us(self.INITIAL_US)) + "Position: {}, ".format(position) + "Frequency: {} ".format(round(freq, 2)) + "Filtered freq: {} ".format(x[-1]) +"PWM: {} ".format(self.pwm_current) + "Freq/PWM = {} ".format(reluctance) + "RMS Current: {}".format(rms_val))
             else:
                 pass
                 #msg = "INCORRECT POSITION RECORDED"
@@ -203,6 +196,10 @@ class MotorController(object):
 
             writer = csv.writer(self.file)
             writer.writerow(self.csv_data)
+            for i in range(2, 5):
+                if(csv_data[i]) > 35:
+                    msg = "OVERCURRENT DETECTED"
+                    reutnr 0, msg
 
             
         return 1, "All Good!"
@@ -247,17 +244,6 @@ class MotorController(object):
         self.pi.hardware_PWM(self.pwm_pin, 0, 0)
         GPIO.output(self.motor_pin, 0)
         self.pi.stop()
-
-    def motor_results(self, resp, msg):
-        print("\n\n-----------------------------\n")
-        print("-----------------------------\n")
-        if not resp:
-            print("MOTOR FAILED\n")
-            print(msg)
-        else:
-            print("MOTOR PASSED\n")
-        print("\n\n-----------------------------\n")
-        print("-----------------------------\n")
 
     def _calculate_rms(self, c_start, c_finish):
         self.csv_data.append(self.data[0][c_finish])
@@ -470,14 +456,14 @@ def run_main():
     else:
         file = file_open('', "rms_data_full", 'w')
         writer = csv.writer(file)
-        HEADER = ["TIMESTAMP", "TARGET PWM", "DURATION", "PHASE A", "PHASE B", "PHASE C"]
+        HEADER = ["TIMESTAMP", "TARGET PWM", "DURATION", "PHASE A min", "PHASE A max", "PHASE B min", "PHASE B max",  "PHASE C min", "PHASE C max", "PHASE A avg", "PHASE B avg", "PHASE C avg", "RPM min", "RPM max", "RPM avg"]
         writer.writerow(HEADER)
 
-    MC_0 = MotorController(25, 2700)    # Burn in, 80% for 45 mins
+    MC_0 = MotorController(25, 30)    # Burn in, 80% for 45 mins (2700 sec)
 
-    MC_1 = MotorController(25, 60)      # Mode 1, 25% for 1 min
+    MC_1 = MotorController(25, 30)      # Mode 1, 25% for 1 min
 
-    MC_2 = MotorController(40, 60)      # Mode 2, 80% for 1 min
+    MC_2 = MotorController(25, 30)      # Mode 2, 80% for 1 min
 
     try:
         resp, msg = MC_0.initialize()
@@ -490,10 +476,23 @@ def run_main():
             while(message_display("Press 'y' and ENTER to start burn-in: ", 'y') != 1):
                 pass
             print("Burn in...\n")
+            FILE_OUTPUT_NAME = str(datetime.datetime.now().replace(microsecond=0))
             file_burn = file_open(FILE_OUTPUT_NAME, " burn_rms_rpm", 'w')
             resp0, msg0 = run_motor(MC_0, None, file_burn)
-        FILE_OUTPUT_NAME = str(datetime.datetime.now().replace(microsecond=0))
 
+            if resp0 < 0:
+                print('\033c')
+                print("***TEST FAILED***")
+                print(msg0)
+                print("***Please Disconnect Motor***")
+                while(message_display("\nType 'c' and ENTER once motor disconnected: ", 'c') != 1):
+                    pass
+                print('\033c')
+                print("\nRestarting test program...")
+                if(os.path.exists(MOTOR_PATH + FILE_OUTPUT_NAME + " burn_rms_rpm")):
+                    os.remove(MOTOR_PATH + FILE_OUTPUT_NAME + " burn_rms_rpm")
+                time.sleep(3)
+                return -1
         # OPEN FILE
 
         print('\033c')
@@ -503,6 +502,9 @@ def run_main():
 
         while(message_display("Press 'y' and ENTER to start test: ", 'y') != 1):
             pass
+
+        FILE_OUTPUT_NAME = str(datetime.datetime.now().replace(microsecond=0))
+
         file1 = file_open(FILE_OUTPUT_NAME, " mode1_rms_rpm", 'w')
         file2 = file_open(FILE_OUTPUT_NAME, " mode2_rms_rpm", 'w')
         file1_full = file_open(FILE_OUTPUT_NAME, " mode1_fulldata", 'w')
@@ -515,9 +517,11 @@ def run_main():
         resp1, msg1 = run_motor(MC_1, file1_full, file1)
         print(msg1)
         if resp1 < 0:
-            #print('\033c')
+            print('\033c')
+            print("***TEST FAILED***")
             print(msg1)
-            while(message_display("\nType 'c' and ENTER to continue: ", 'c') != 1):
+            print("***Please Disconnect Motor***")
+            while(message_display("\nType 'c' and ENTER once motor disconnected: ", 'c') != 1):
                 pass
             print('\033c')
             print("\nRestarting test program...")
@@ -527,7 +531,7 @@ def run_main():
                 os.remove(MOTOR_PATH + FILE_OUTPUT_NAME + " mode2_fulldata")
             time.sleep(3)
             return -1
-        MC_1.motor_results(resp1, msg1)
+
         time.sleep(2)
         #print('\033c')
         print("*****************************\n")
@@ -537,7 +541,8 @@ def run_main():
         print(msg2)
         #end_sequence(MC_2)
         if resp2 < 0:
-            #print('\033c')
+            print('\033c')
+            print("***TEST FAILED***")
             print(msg2)
             print("***Please Disconnect Motor***")
             while(message_display("\nType 'c' and ENTER once motor disconnected: ", 'c') != 1):
@@ -554,18 +559,51 @@ def run_main():
         print(f"FILES FOR THIS TEST WILL BE SAVED WITH THE TIMESTAMP: {FILE_OUTPUT_NAME}\n")
         print("\nCalculating total RMS values. This may take up to a minute...\n")
         rms1, rms2 = calculate_rms.main(FILE_OUTPUT_NAME + " mode1_fulldata", FILE_OUTPUT_NAME + " mode2_fulldata", MC_1.data[0].index(MC_1.timestamp_steady_state), MC_2.data[0].index(MC_2.timestamp_steady_state))
+        rpm1, current_1, rpm_2, current_2 = motor_results.main(FILE_OUTPUT_NAME + " mode1_rms_rpm", FILE_OUTPUT_NAME + " mode2_rms_rpm", MC_1.data[0].index(MC_1.timestamp_steady_state), MC_2.data[0].index(MC_2.timestamp_steady_state))
+
         print(f"Phase RMS for mode1 [A, B, C]: {rms1}")
         print(f"Phase RMS for mode2 [A, B, C]: {rms2}")
+
         rms1.insert(0, FILE_OUTPUT_NAME)
         rms2.insert(0, FILE_OUTPUT_NAME)
         rms1.insert(1, MC_1.pwm_target)
         rms2.insert(1, MC_2.pwm_target)
         rms1.insert(2, MC_1.motor_duration)
         rms2.insert(2, MC_2.motor_duration)
+
+        rms1.insert(3, current_1[0][0])
+        rms1.insert(4, current_1[0][1])
+
+        rms1.insert(5, current_1[1][0])
+        rms1.insert(6, current_1[1][1])
+
+        rms1.insert(7, current_1[2][0])
+        rms1.insert(8, current_1[2][1])
+
+        rms2.insert(3, current_2[0][0])
+        rms2.insert(4, current_2[0][1])
+
+        rms2.insert(5, current_2[1][0])
+        rms2.insert(6, current_2[1][1])
+
+        rms2.insert(7, current_2[2][0])
+        rms2.insert(8, current_2[2][1])
+
+        rms1.insert(9, rpm1[0])
+        rms2.insert(9, rpm2[0])
+
+        rms1.insert(10, rpm1[1])
+        rms2.insert(10, rpm2[1])
+
+        rms1.insert(11, rpm1[2])
+        rms2.insert(11, rpm2[2])
+
         writer = csv.writer(file)
         writer.writerow(rms1)
         writer.writerow(rms2)
+
         
+
         print("Please disconnect motor!\n")
         while( message_display("Press 'c' and ENTER to continue to next motor, or CTRL + 'C' to exit program: ", 'c') != 1):
             pass
