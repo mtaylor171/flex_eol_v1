@@ -197,7 +197,7 @@ class MotorController(object):
             writer = csv.writer(self.file)
             writer.writerow(self.csv_data)
             for i in range(2, 5):
-                if(csv_data[i]) > 35:
+                if(self.csv_data[i]) > 35:
                     msg = "OVERCURRENT DETECTED"
                     return 0, msg
 
