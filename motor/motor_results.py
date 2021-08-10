@@ -15,7 +15,7 @@ class RMS_calc(object):
     def collect_data(self):
         with open("/home/pi/Documents/FLEX_DATA_FOLDER/" + self.filename, 'r') as csvfile:
             plots = csv.reader(csvfile,delimiter=',')
-            next(plots)
+            #next(plots)
             for row in plots:
                 self.x.append(int(row[0]))
                 for i in range(1,5):
