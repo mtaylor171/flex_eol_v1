@@ -15,6 +15,7 @@ import RPi.GPIO as GPIO
 import os
 import pigpio
 import calculate_rms
+import motor_results
 import math
 
 ACTIVE_CHANNELS = 8
@@ -461,9 +462,9 @@ def run_main():
 
     MC_0 = MotorController(25, 30)    # Burn in, 80% for 45 mins (2700 sec)
 
-    MC_1 = MotorController(25, 30)      # Mode 1, 25% for 1 min
+    MC_1 = MotorController(25, 10)      # Mode 1, 25% for 1 min
 
-    MC_2 = MotorController(25, 30)      # Mode 2, 80% for 1 min
+    MC_2 = MotorController(25, 10)      # Mode 2, 80% for 1 min
 
     try:
         resp, msg = MC_0.initialize()
