@@ -451,7 +451,7 @@ def file_open(timestamp, name, action):
     return file
 
 def run_main():
-    if(os.path.exists("/home/pi/Documents/MOTOR_DATA_FOLDER/rms_data_full")):
+    if(os.path.exists("/home/pi/Documents/FLEX_DATA_FOLDER/rms_data_full")):
         file = file_open('', "rms_data_full", 'a')
         pass
     else:
@@ -608,10 +608,10 @@ def run_main():
         print("Please disconnect motor!\n")
         while( message_display("Press 'c' and ENTER to continue to next motor, or CTRL + 'C' to exit program: ", 'c') != 1):
             pass
-        if(os.path.exists("/home/pi/Documents/MOTOR_DATA_FOLDER/" + FILE_OUTPUT_NAME + " mode1_fulldata")):
-            os.remove("/home/pi/Documents/MOTOR_DATA_FOLDER/" + FILE_OUTPUT_NAME + " mode1_fulldata")
-        if(os.path.exists("/home/pi/Documents/MOTOR_DATA_FOLDER/" + FILE_OUTPUT_NAME + " mode2_fulldata")):
-            os.remove("/home/pi/Documents/MOTOR_DATA_FOLDER/" + FILE_OUTPUT_NAME + " mode2_fulldata")
+        if(os.path.exists("/home/pi/Documents/FLEX_DATA_FOLDER/" + FILE_OUTPUT_NAME + " mode1_fulldata")):
+            os.remove("/home/pi/Documents/FLEX_DATA_FOLDER/" + FILE_OUTPUT_NAME + " mode1_fulldata")
+        if(os.path.exists("/home/pi/Documents/FLEX_DATA_FOLDER/" + FILE_OUTPUT_NAME + " mode2_fulldata")):
+            os.remove("/home/pi/Documents/FLEX_DATA_FOLDER/" + FILE_OUTPUT_NAME + " mode2_fulldata")
         time.sleep(1)
         return 1
     except KeyboardInterrupt:
