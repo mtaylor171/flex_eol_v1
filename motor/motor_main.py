@@ -624,9 +624,8 @@ def run_main():
 
         if (rms1_msg == "PASS") and (rms2_msg == "PASS"):
             print("MOTOR TEST PASSED")
-
-        elseD
-        print("MOTOR TEST FAILED - PLEASE SEE FILE 'rms_data_full'")
+        else:
+            print("MOTOR TEST FAILED - PLEASE SEE FILE 'rms_data_full' for diagnostics")
 
         rms1.insert(15, rms1_msg)
         rms2.insert(15, rms2_msg)
@@ -637,6 +636,7 @@ def run_main():
 
         
         file.close()
+
         print("Please disconnect motor!\n")
         while( message_display("Press 'c' and ENTER to continue to next motor, or CTRL + 'C' to exit program: ", 'c') != 1):
             pass
