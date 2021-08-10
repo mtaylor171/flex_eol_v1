@@ -567,6 +567,9 @@ def run_main():
 
         rpm1, current_1, rpm2, current_2 = motor_results.main(file1.name, file2.name, 30, 30)
 
+        rms1 = []
+        rms2 = []
+
         rms1.insert(0, FILE_OUTPUT_NAME)
         rms2.insert(0, FILE_OUTPUT_NAME)
         rms1.insert(1, MC_1.pwm_target)
