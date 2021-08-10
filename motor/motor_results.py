@@ -58,17 +58,6 @@ class RMS_calc(object):
 
         return i_data
 
-
-    def calc(self): 
-        for i in range(0, 3):
-            temp_sum = 0
-            temp_rms = 0
-            for j in range(self.file_start,len(self.y[0])):
-                temp_sum += (2 * ((self.y[i][j])**2) * (self.x[j] - self.x[j-1]))
-            temp_rms = temp_sum/(self.x[len(self.y[0]) - 1] - self.x[self.file_start])
-            self.rms.append(round((math.sqrt(temp_rms))/1000, 3))
-        return self.rms
-
 def main(filename_1, filename_2, file1_start, file2_start):
     test1 = RMS_calc(filename_1, file1_start)
     test2 = RMS_calc(filename_2, file2_start)
@@ -76,10 +65,10 @@ def main(filename_1, filename_2, file1_start, file2_start):
     test1.collect_data()
     test2.collect_data()
 
-    rpm_1 = test1.calc()
-    rpm_2 = test2.calc()
+    rpm_1 = test1.test_rpm()
+    rpm_2 = test2.test_rpm()
 
-    current_1 = test1.calc()
-    current_2 = test2.calc()
+    current_1 = test1.test_current()
+    current_2 = test2.test_current()
 
     return rpm1, current_1, rpm_2, current_2
