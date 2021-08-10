@@ -199,7 +199,7 @@ class MotorController(object):
             for i in range(2, 5):
                 if(csv_data[i]) > 35:
                     msg = "OVERCURRENT DETECTED"
-                    reutnr 0, msg
+                    return 0, msg
 
             
         return 1, "All Good!"
