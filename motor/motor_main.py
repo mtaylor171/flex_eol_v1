@@ -597,12 +597,12 @@ def run_main():
                 print("*****************************\n")
         '''
         for i in range(0, 3):
-            print(f"rms1[{(i * 2) + 4}] pass? ({rms1[(i * 2) + 4]}): {rms1[(i * 2) + 4] in range(0, 20)}")
-            print(f"rms2[{(i * 2) + 4}] pass? ({rms2[(i * 2) + 4]}): {rms2[(i * 2) + 4] in range(0, 20)}")
+            print(f"rms1[{(i * 2) + 4}] pass? ({rms1[(i * 2) + 4]}): {rms1[(i * 2) + 4] < 20}")
+            print(f"rms2[{(i * 2) + 4}] pass? ({rms2[(i * 2) + 4]}): {rms2[(i * 2) + 4] < 20}")
 
         for i in range(6, 8):
-            print(f"rms1[{i * 2}] pass? ({rms1[i * 2]}): {rms1[i * 2] in range(0, 10000)}")
-            print(f"rms2[{i * 2}] pass? ({rms2[i * 2]}): {rms2[i * 2] in range(0, 10000)}")
+            print(f"rms1[{i * 2}] pass? ({rms1[i * 2]}): {rms1[i * 2] > 0 and rms1[i * 2] < 10000}")
+            print(f"rms2[{i * 2}] pass? ({rms2[i * 2]}): {rms2[i * 2] > 0 and rms2[i * 2] < 10000}")
 
         '''
         if (rms1[4] in range(0, 20)) and (rms1[6] in range(0, 20)) and (rms1[8] in range(0, 20)) and (rms1[12] > 0) and (rms1[14] < 4000)):
