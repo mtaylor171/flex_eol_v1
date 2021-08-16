@@ -589,12 +589,12 @@ def run_main():
         rms1.insert(14, rpm1[2])
         rms2.insert(14, rpm2[2])
 
-        if ((rms1[4] in range (0, 20)) and (rms1[6] in range(0, 20)) and (rms1[8] in range(0, 20)) and (rms1[12] > 0) and (rms1[13] < 4000)):
+        if ((rms1[4] in range(0, 20)) and (rms1[6] in range(0, 20)) and (rms1[8] in range(0, 20)) and (rms1[12] > 0) and (rms1[13] < 4000)):
             rms1_msg = "PASS"
         else:
             rms1_msg = "FAIL"
 
-        if ((rms2[4] in range (0, 20)) and (rms2[6] in range(0, 20)) and (rms2[8] in range(0, 20)) and (rms2[12] > 0) and (rms2[13] < 16000)):
+        if ((rms2[4] in range(0, 20)) and (rms2[6] in range(0, 20)) and (rms2[8] in range(0, 20)) and (rms2[12] > 0) and (rms2[13] < 16000)):
             rms2_msg = "PASS"
         else:
             rms2_msg = "FAIL"
