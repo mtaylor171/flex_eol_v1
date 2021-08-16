@@ -589,7 +589,23 @@ def run_main():
         rms1.insert(14, rpm1[2])
         rms2.insert(14, rpm2[2])
 
-        if ((rms1[4] in range(0, 20)) and (rms1[6] in range(0, 20)) and (rms1[8] in range(0, 20)) and (rms1[12] > 0) and (rms1[14] < 4000)):
+        '''
+        for k in range(0, 3):
+            if((options[0](rms1[(k*2) + 4]) != "PASS") or (options[0](rms2[(k*2) + 4]) != "PASS")):
+                print("*****************************")
+                print("\nMOTOR TEST FAILED - PLEASE SEE FILE 'rms_data_full' for diagnostics\n")
+                print("*****************************\n")
+        '''
+        for i in range(0, 3):
+            print(f"rms1[{(i * 2) + 4}] pass?: {rms1[(i * 2) + 4] in range(0, 20)}")
+            print(f"rms2[{(i * 2) + 4}] pass?: {rms2[(i * 2) + 4] in range(0, 20)}")
+
+        for i in range(6, 7):
+            print(f"rms1[{i * 2}] pass?: {rms1[i * 2] in range(0, 10000)}")
+            print(f"rms2[{i * 2}] pass?: {rms2[i * 2] in range(0, 10000)}")
+
+        '''
+        if (rms1[4] in range(0, 20)) and (rms1[6] in range(0, 20)) and (rms1[8] in range(0, 20)) and (rms1[12] > 0) and (rms1[14] < 4000)):
             rms1_msg = "PASS"
         else:
             rms1_msg = "FAIL"
@@ -598,7 +614,7 @@ def run_main():
             rms2_msg = "PASS"
         else:
             rms2_msg = "FAIL"
-
+        '''
         if ((rms1_msg == "PASS") and (rms2_msg == "PASS")):
             print("*****************************")
             print("\nMOTOR TEST PASSED\n")
