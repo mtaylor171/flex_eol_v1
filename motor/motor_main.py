@@ -185,9 +185,14 @@ class MotorController(object):
             self.position_hold_time = get_us()
             self.last_position = position
         else:
-            if get_elapsed_us(self.position_hold_time) > 2:     # If position has not changed in 2 seconds, detect stall
-                msg = "STALL DETECTED"
-                return 0, msg
+        	pass
+            #if get_elapsed_us(self.position_hold_time) > 4:     # If position has not changed in 2 seconds, detect stall
+            #    msg = "STALL DETECTED"
+            #    return 0, msg
+
+        if((get_elapsed_us(self.INITIAL_US) > 3) and self.freq < 10):
+        	msg = "STALL DETECTED"
+        	return 0, msg
 
         #Every second, calculate RMS current on phases and write to csv, along with rpm data
         if(len(self.data[0]) > 2) and (temp_data[0] - self.data[0][self.last_current_index - 1] >= 1000000): 
@@ -205,7 +210,6 @@ class MotorController(object):
                     #pass
                     return 0, msg
 
-            
         return 1, "All Good!"
 
     def running_filter(self, data):
@@ -303,7 +307,7 @@ def start_sequence():
 
     try:
         if not MC_start.C_FUNCTIONS.adc_setlow():
-            print("ADC set low")
+            #print("ADC set low")
             pass
 
         while(MC_start.bcm2835_motor_ping()):
