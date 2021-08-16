@@ -190,7 +190,7 @@ class MotorController(object):
             #    msg = "STALL DETECTED"
             #    return 0, msg
 
-        if((get_elapsed_us(self.INITIAL_US) > 3) and self.freq < 10):
+        if(round((get_elapsed_us(self.INITIAL_US), 1) > 3) and self.freq < 10):
         	msg = "STALL DETECTED"
         	return 0, msg
 
