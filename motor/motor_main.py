@@ -162,7 +162,7 @@ class MotorController(object):
         self.csv_data = []
 
         for i in range(1,4):            # Turn hall sensor sensor data into a 3-digit position code
-            if(temp_data[i] > 1500):    # Set a threshold of 1500mV for the hall pulse
+            if(temp_data[i] > 1650):    # Set a threshold of 1500mV for the hall pulse
                 code[i-1] = 1
             else:
                 code[i-1] = 0
@@ -200,8 +200,9 @@ class MotorController(object):
             writer = csv.writer(self.file)
             writer.writerow(self.csv_data)
             for i in range(2, 5):
-                if(self.csv_data[i]) > 35:          # Raise overcurrent flag if current is over 35A (This can be changed)
+                if(self.csv_data[i]) > 40:          # Raise overcurrent flag if current is over 40A (This can be changed)
                     msg = "OVERCURRENT DETECTED"
+                    #pass
                     return 0, msg
 
             

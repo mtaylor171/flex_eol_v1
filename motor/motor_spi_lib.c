@@ -673,5 +673,5 @@ void AD5592_Init()
     bcm2835_spi_setDataMode(BCM2835_SPI_MODE1);                   // Mode 1
 
     /* Set SPI clock */
-    bcm2835_spi_setClockDivider(BCM2835_SPI_CLOCK_DIVIDER_64); 	  // 1.5GHz / 128 = 11.71MHz
+    bcm2835_spi_setClockDivider(BCM2835_SPI_CLOCK_DIVIDER_1024); 	  // 1.5GHz / 128 = 11.71MHz
 }
