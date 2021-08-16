@@ -444,7 +444,7 @@ def run_main():
         HEADER = ["TIMESTAMP", "TARGET PWM", "DURATION", "PHASE A min", "PHASE A max", "PHASE B min", "PHASE B max",  "PHASE C min", "PHASE C max", "PHASE A avg", "PHASE B avg", "PHASE C avg", "RPM min", "RPM max", "RPM avg", "PASS/FAIL"]
         writer.writerow(HEADER)
 
-    MC_0 = MotorController(50, 2700)    # Burn in, 50% for 45 mins (2700 sec)
+    MC_0 = MotorController(80, 2700)    # Burn in, 80% for 45 mins (2700 sec)
 
     MC_1 = MotorController(25, 60)      # Mode 1, 25% for 1 min
 
@@ -466,7 +466,7 @@ def run_main():
             resp0, msg0 = run_motor(MC_0, None, file_burn)
 
             if resp0 < 0:
-                print('\033c')
+                #print('\033c')
                 print("***TEST FAILED***")
                 print(msg0)
                 print("***Please Disconnect Motor***")
@@ -502,7 +502,7 @@ def run_main():
         resp1, msg1 = run_motor(MC_1, file1_full, file1)
         print(msg1)
         if resp1 < 0:
-            print('\033c')
+            #print('\033c')
             print("***TEST FAILED***")
             print(msg1)
             print("***Please Disconnect Motor***")
@@ -522,7 +522,7 @@ def run_main():
         print(msg2)
         #end_sequence(MC_2)
         if resp2 < 0:
-            print('\033c')
+            #print('\033c')
             print("***TEST FAILED***")
             print(msg2)
             print("***Please Disconnect Motor***")
