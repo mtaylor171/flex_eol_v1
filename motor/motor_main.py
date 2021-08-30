@@ -376,7 +376,7 @@ def run_motor(MC, file_full, file):
             if not resp:
                 for i in range(0, 4):
                     reg_data = MC.C_FUNCTIONS.motor_register_read(i)
-                    print('Register {}:'.format(i) + ' {}'.format(hex(reg_data)));
+                    print('Register {}:'.format(i) + ' {}'.format(hex(reg_data)))
                     print('\n')
                 MC.analog_terminate()
                 MC.shutdown()
@@ -611,17 +611,6 @@ def run_main():
             else:
                 rms2_msg = "FAIL"
 
-        '''
-        if (rms1[4] in range(0, 20)) and (rms1[6] in range(0, 20)) and (rms1[8] in range(0, 20)) and (rms1[12] > 0) and (rms1[14] < 4000)):
-            rms1_msg = "PASS"
-        else:
-            rms1_msg = "FAIL"
-
-        if ((rms2[4] in range(0, 20)) and (rms2[6] in range(0, 20)) and (rms2[8] in range(0, 20)) and (rms2[12] > 0) and (rms2[14] < 16000)):
-            rms2_msg = "PASS"
-        else:
-            rms2_msg = "FAIL"
-        '''
         if ((rms1_msg == "PASS") and (rms2_msg == "PASS")):
             print("*****************************")
             print("\nMOTOR TEST PASSED\n")
@@ -682,6 +671,3 @@ if __name__ == "__main__":
 
             else:
                 pass
-
-
-
