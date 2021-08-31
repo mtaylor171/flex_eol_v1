@@ -203,7 +203,7 @@ class MotorController(object):
             writer = csv.writer(self.file)
             writer.writerow(self.csv_data)
             for i in range(2, 5):
-                if(self.csv_data[i]) > 40:          # Raise overcurrent flag if current is over 40A (This can be changed)
+                if(self.csv_data[i]) > 50:          # Raise overcurrent flag if current is over 40A (This can be changed)
                     msg = "OVERCURRENT DETECTED"
                     #pass
                     return 0, msg
