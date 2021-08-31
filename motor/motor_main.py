@@ -185,11 +185,11 @@ class MotorController(object):
             self.position_hold_time = get_us()
             self.last_position = position
         else:
-            if get_elapsed_us(self.position_hold_time) > 10:     # If position has not changed in 4 seconds, detect stall
+            if get_elapsed_us(self.position_hold_time) > 4:     # If position has not changed in 4 seconds, detect stall
                 msg = "STALL DETECTED (POSITION)"
                 return 0, msg
 
-        if((round(get_elapsed_us(self.INITIAL_US), 1) > 4) and self.freq < 50):
+        if((round(get_elapsed_us(self.INITIAL_US), 1) > 10) and self.freq < 25):
             msg = "STALL DETECTED (rpm)"
             return 0, msg
         #Every second, calculate RMS current on phases and write to csv, along with rpm data
