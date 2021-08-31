@@ -189,7 +189,7 @@ class MotorController(object):
                 msg = "STALL DETECTED (POSITION)"
                 return 0, msg
 
-        if((round(get_elapsed_us(self.INITIAL_US), 1) > 3) and self.freq < 50):
+        if((round(get_elapsed_us(self.INITIAL_US), 1) > 4) and self.freq < 50):
             msg = "STALL DETECTED (rpm)"
             return 0, msg
         #Every second, calculate RMS current on phases and write to csv, along with rpm data
@@ -446,7 +446,7 @@ def run_main():
 
     MC_0 = MotorController(80, 2700)    # Burn in, 80% for 45 mins (2700 sec)
 
-    MC_1 = MotorController(25, 60)      # Mode 1, 25% for 1 min
+    MC_1 = MotorController(30, 60)      # Mode 1, 25% for 1 min
 
     MC_2 = MotorController(80, 60)      # Mode 2, 80% for 1 min
 
