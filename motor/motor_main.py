@@ -446,7 +446,7 @@ def run_main():
 
     MC_0 = MotorController(80, 2700)    # Burn in, 80% for 45 mins (2700 sec)
 
-    MC_1 = MotorController(50, 60)      # Mode 1, 25% for 1 min
+    MC_1 = MotorController(30, 60)      # Mode 1, 25% for 1 min
 
     MC_2 = MotorController(80, 60)      # Mode 2, 80% for 1 min
 
