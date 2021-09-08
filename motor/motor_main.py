@@ -606,7 +606,7 @@ def run_main():
                 rms1_msg = "PASS"
             else:
                 rms1_msg = "FAIL"
-            if((rms2[i * 2] > 1000) and (rms2[i * 2] < 1800) and (rms2_msg != "FAIL")):
+            if((rms2[i * 2] > 500) and (rms2[i * 2] < 1800) and (rms2_msg != "FAIL")):
                 rms2_msg = "PASS"
             else:
                 rms2_msg = "FAIL"
