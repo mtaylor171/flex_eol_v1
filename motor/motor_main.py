@@ -299,9 +299,9 @@ def start_sequence():
 
     MC_start.bcm2835_init_spi()
 
-    print("Waiting on motor board to power up...")
-    print("(NOTE: Hold CTRL + 'C' to exit program)\n")
-
+    GPIO.output(self.motor_pin, 0)
+    while(message_display("Press 'y' when motor is connected ", 'y') != 1):
+        pass
 
     try:
         if not MC_start.C_FUNCTIONS.adc_setlow():
@@ -620,7 +620,7 @@ def run_main():
             print("\nMOTOR TEST FAILED - PLEASE SEE FILE 'rms_data_full' for diagnostics\n")
             print("*****************************\n")
 
-        rms1.insert(15, rms1_msg)
+        rms1.insert(15, rms1_msg) 
         rms2.insert(15, rms2_msg)
         
         writer = csv.writer(file)
@@ -670,4 +670,4 @@ if __name__ == "__main__":
                 break
 
             else:
-                pass
+                break
