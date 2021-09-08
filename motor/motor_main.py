@@ -299,7 +299,7 @@ def start_sequence():
 
     MC_start.bcm2835_init_spi()
 
-    GPIO.output(self.motor_pin, 0)
+    GPIO.output(15, 0)
     while(message_display("Press 'y' when motor is connected ", 'y') != 1):
         pass
 
