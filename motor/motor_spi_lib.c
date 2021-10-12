@@ -27,7 +27,7 @@
 #define DRV8343_IC9_CONTROL  	0x2F 	/* T_retry 4ms, dead_time 1us, T_drive 3us */
 #define DRV8343_IC10_CONTROL	0x61 	/* Charge UVLO enabled, gate drive fault enabled, OCP deglitch 4.75us */
 #define DRV8343_IC11_CONTROL 	0x00 	/* Overtemp not reported in nFault, OCP causes latched fault */
-#define DRV8343_IC12_CONTROL 	0x2A 	/* 20 V/V current sense amplifier gain */
+#define DRV8343_IC12_CONTROL 	0x15 	/* 20 V/V current sense amplifier gain */
 #define DRV8343_IC13_CONTROL	0x00	/* Sense amplifier Vref, sense OCP 0.25V */
 #define DRV8343_IC14_CONTROL 	0x00 	/* Enable sense overcurrent fault, normal current sense amplifier operation */
 
