@@ -488,7 +488,7 @@ def run_main():
         while(message_display("Press 'y' and ENTER to start test: ", 'y') != 1):
             pass
 
-        FILE_OUTPUT_NAME = str(datetime.datetime.now().replace(microsecond=0))
+        FILE_OUTPUT_NAME = str(datetime.datetime.now().replace(microsecond=0)).replace(":", "_")
 
         file1 = file_open(FILE_OUTPUT_NAME, " mode1_rms_rpm", 'w')
         file2 = file_open(FILE_OUTPUT_NAME, " mode2_rms_rpm", 'w')
