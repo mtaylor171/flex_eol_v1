@@ -48,7 +48,7 @@ class MotorController(object):
         GPIO.setup(self.motor_pin, GPIO.OUT)
         
         ## Default values
-        self.pwm_current = 25
+        self.pwm_current = 37
         self.position_hold_time = 0
         self.position_counter = 0
         self.data = [[],[],[],[],[],[],[],[],[]]
