@@ -48,7 +48,7 @@ class MotorController(object):
         GPIO.setup(self.motor_pin, GPIO.OUT)
         
         ## Default values
-        self.pwm_current = 37
+        self.pwm_current = 25
         self.position_hold_time = 0
         self.position_counter = 0
         self.data = [[],[],[],[],[],[],[],[],[]]
@@ -185,7 +185,7 @@ class MotorController(object):
             self.position_hold_time = get_us()
             self.last_position = position
         else:
-            if get_elapsed_us(self.position_hold_time) > 5:     # If position has not changed in 4 seconds, detect stall
+            if get_elapsed_us(self.position_hold_time) > 6:     # If position has not changed in 4 seconds, detect stall
                 msg = "STALL DETECTED (POSITION)"
                 return 0, msg
 
