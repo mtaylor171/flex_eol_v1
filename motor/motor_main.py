@@ -602,11 +602,11 @@ def run_main():
                 rms2_msg = "FAIL"
 
         for i in range(6, 8):
-            if((rms1[i * 2] > 100) and (rms1[i * 2] < 500) and (rms1_msg != "FAIL")):
+            if((rms1[i * 2] > 300) and (rms1[i * 2] < 700) and (rms1_msg != "FAIL")):
                 rms1_msg = "PASS"
             else:
                 rms1_msg = "FAIL"
-            if((rms2[i * 2] > 500) and (rms2[i * 2] < 1800) and (rms2_msg != "FAIL")):
+            if((rms2[i * 2] > 800) and (rms2[i * 2] < 1800) and (rms2_msg != "FAIL")):
                 rms2_msg = "PASS"
             else:
                 rms2_msg = "FAIL"
